@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  nickname     String    @unique
+  passwordHash String
+  avatar       String?
+  points       Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  posts       Post[]
+  comments    Comment[]
+  votes       Vote[]
+  bookmarks   Bookmark[]
+  communities Community[]
+  followers   Follow[]   @relation("Following")
+  following   Follow[]   @relation("Followers")
+  notifications Notification[]
+}
+
+model Community {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  brand       String
+  code        String
+  displayName String
+  description String?
+  postCount   Int      @default(0)
+  memberCount Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  posts       Post[]
+}
+
+model Post {
+  id            String   @id @default(cuid())
+  title         String
+  content       String?
+  type          String   @default("TEXT") // TEXT, IMAGE, LINK
+  url           String?
+  images        String?  // JSON array of image URLs
+  voteScore     Int      @default(0)
+  bookmarkCount Int      @default(0)
+  commentCount  Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  communityId String
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments    Comment[]
+  bookmarks   Bookmark[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  voteScore Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parentId  String?
+  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id])
+  children  Comment[] @relation("CommentReplies")
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+model Vote {
+  id         String   @id @default(cuid())
+  value      Int      // -1, 0, 3
+  targetType String   // POST, COMMENT
+  targetId   String
+  createdAt  DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, targetId, targetType])
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+}
+
+model Follow {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+
+  followerId  String
+  follower    User   @relation("Followers", fields: [followerId], references: [id], onDelete: Cascade)
+  followingId String
+  following   User   @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String   // FOLLOW, LIKE, COMMENT, BOOKMARK
+  message   String
+  read      Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

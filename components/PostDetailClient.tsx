@@ -213,8 +213,8 @@ export default function PostDetailClient({ postId }: { postId: string }) {
             const imgs = post.images!;
             return (
               <div className="relative rounded-lg overflow-hidden mb-4 group bg-secondary">
-                <div className="w-full h-64 sm:h-80 relative">
-                  <img src={imgs[imgIndex]} alt={`图片 ${imgIndex + 1}`} className="w-full h-full object-cover" />
+                <div className="w-full h-64 sm:h-80 md:h-96 relative flex items-center justify-center">
+                  <img src={imgs[imgIndex]} alt={`图片 ${imgIndex + 1}`} className="max-w-full max-h-full object-contain" />
                 </div>
                 {/* Arrows */}
                 {imgs.length > 1 && (

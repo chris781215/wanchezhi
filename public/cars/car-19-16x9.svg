@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1c1c1c"/>
+      <stop offset="50%" style="stop-color:#2d2d2d"/>
+      <stop offset="100%" style="stop-color:#4a4a4a"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:rgba(255,255,255,0.15)"/>
+      <stop offset="100%" style="stop-color:rgba(255,255,255,0)"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <rect width="1200" height="270" fill="url(#shine)"/>
+  <g transform="translate(390, 277.5) scale(2.25)">
+    <path d="M80,140 L100,140 L110,120 L140,105 L180,100 L220,100 L260,105 L290,115 L310,120 L320,140 L340,140 L340,155 L320,155 L310,155 A20,20 0 1,1 270,155 L150,155 A20,20 0 1,1 110,155 L80,155 Z" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+    <circle cx="130" cy="155" r="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="3"/>
+    <circle cx="290" cy="155" r="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="3"/>
+  </g>
+  <text x="600" y="635" font-family="Arial, sans-serif" font-size="30" fill="rgba(255,255,255,0.6)" text-anchor="middle" font-weight="bold">Mustang GT</text>
+  <text x="600" y="659" font-family="Arial, sans-serif" font-size="20" fill="rgba(255,255,255,0.35)" text-anchor="middle">16x9 · 玩车志</text>
+</svg>

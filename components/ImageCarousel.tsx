@@ -66,27 +66,14 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
       onMouseLeave={() => setIsPaused(false)}
     >
       <Link href={`/w/${post.community?.slug || 'all'}/post/${post.id}`} className="block relative">
-        {/* Image */}
-        <div className="w-full h-64 sm:h-72 md:h-80 bg-secondary relative">
+        {/* Image - fixed height container, image centered at natural ratio */}
+        <div className="w-full h-64 sm:h-80 md:h-96 bg-secondary relative flex items-center justify-center">
           {imgCount > 0 && (
             <img
               src={post.images![0]}
               alt={post.title}
-              className="absolute inset-0 w-full h-full object-cover"
+              className="max-w-full max-h-full object-contain"
             />
-          )}
-          {/* Thumbnail strip */}
-          {imgCount > 1 && (
-            <div className="absolute top-4 right-4 flex gap-1.5">
-              {post.images!.slice(1, 4).map((img, idx) => (
-                <div
-                  key={idx}
-                  className="w-12 h-12 rounded-lg overflow-hidden border-2 border-white/30"
-                >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
-                </div>
-              ))}
-            </div>
           )}
         </div>
 

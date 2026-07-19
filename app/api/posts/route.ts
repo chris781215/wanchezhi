@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { mockPosts } from '@/lib/mock-data';
+import { mockPosts, mockCommunities, mockUsers } from '@/lib/mock-data';
 
 export async function GET() {
   return NextResponse.json({ success: true, data: mockPosts });
@@ -8,27 +8,32 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const { title, content, type, communityId, url, images, price } = await request.json();
-    if (!title || !communityId) {
-      return NextResponse.json({ success: false, error: '标题和社区不能为空' }, { status: 400 });
+    if (!communityId) {
+      return NextResponse.json({ success: false, error: '社区不能为空' }, { status: 400 });
     }
+    // Auto-generate title from content if not provided
+    const finalTitle = title || (content ? content.trim().split('\n')[0].slice(0, 30) : (url || '分享'));
+    const community = mockCommunities.find((c) => c.slug === communityId || c.id === communityId);
     const newPost = {
       id: 'post-' + Date.now(),
-      title,
+      title: finalTitle,
       content: content || '',
       type: type || 'TEXT',
       url: url || null,
       images: images || [],
       price: price || null,
-      communityId,
+      communityId: community?.id || communityId,
       authorId: 'user1',
       voteScore: 0,
       bookmarkCount: 0,
       commentCount: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
-      community: { slug: communityId, displayName: communityId },
-      author: { id: 'user1', nickname: '张三', avatar: '/avatars/default.png' },
+      community: community || { slug: communityId, displayName: communityId, brand: '' },
+      author: mockUsers[0],
     };
+    // Push to in-memory array so detail page can find it
+    mockPosts.unshift(newPost as any);
     return NextResponse.json({ success: true, data: newPost });
   } catch (error) {
     console.error('Create post error:', error);

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2d132c"/>
+      <stop offset="50%" style="stop-color:#801336"/>
+      <stop offset="100%" style="stop-color:#c72c41"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:rgba(255,255,255,0.15)"/>
+      <stop offset="100%" style="stop-color:rgba(255,255,255,0)"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="800" fill="url(#bg)"/>
+  <rect width="600" height="320" fill="url(#shine)"/>
+  <g transform="translate(90, 340) scale(1.2)">
+    <path d="M80,140 L100,140 L110,120 L140,105 L180,100 L220,100 L260,105 L290,115 L310,120 L320,140 L340,140 L340,155 L320,155 L310,155 A20,20 0 1,1 270,155 L150,155 A20,20 0 1,1 110,155 L80,155 Z" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+    <circle cx="130" cy="155" r="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="3"/>
+    <circle cx="290" cy="155" r="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="3"/>
+  </g>
+  <text x="300" y="760" font-family="Arial, sans-serif" font-size="15" fill="rgba(255,255,255,0.6)" text-anchor="middle" font-weight="bold">Benz W221</text>
+  <text x="300" y="784" font-family="Arial, sans-serif" font-size="10" fill="rgba(255,255,255,0.35)" text-anchor="middle">3x4 · 玩车志</text>
+</svg>

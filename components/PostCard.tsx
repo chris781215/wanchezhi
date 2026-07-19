@@ -184,12 +184,12 @@ export default function PostCard({ post, rank }: PostCardProps) {
           {hasImages && (
             <div className="flex gap-1.5 mb-3">
               {post.images!.slice(0, 3).map((img, idx) => (
-                <div key={idx} className="w-20 h-16 rounded-md overflow-hidden bg-secondary shrink-0">
-                  <img src={img} alt="" className="w-full h-full object-cover" />
+                <div key={idx} className="rounded-md overflow-hidden bg-secondary shrink-0">
+                  <img src={img} alt="" className="h-20 w-auto object-contain" />
                 </div>
               ))}
               {post.images!.length > 3 && (
-                <div className="w-20 h-16 rounded-md bg-black/50 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                <div className="h-20 px-3 rounded-md bg-black/50 flex items-center justify-center text-white text-xs font-bold shrink-0">
                   +{post.images!.length - 3}
                 </div>
               )}

@@ -212,7 +212,7 @@ export const mockPosts: Post[] = [
     title: 'W221 入手半年心得，M272 发动机真的耐用吗？',
     content: '半年前入手了一台2008年的S350，目前跑了15万公里。说说我的用车感受...\n\n## 优点\n- 底盘质感依然是顶级\n- 空气悬挂虽然老但没漏气\n- M272 3.5L V6 动力够用\n\n## 需要注意的\n- 正时链条导板容易碎\n- 平衡轴齿轮磨损问题\n- 电子系统偶尔抽风',
     type: 'IMAGE',
-    images: ['https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&h=500&fit=crop', 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=500&fit=crop'],
+    images: ['/cars/car-01-4x3.svg', '/cars/car-04-9x16.svg'],
     communityId: 'comm1',
     authorId: 'user1',
     voteScore: 87,
@@ -228,7 +228,7 @@ export const mockPosts: Post[] = [
     title: 'E46 330i 改装分享：回归驾驶乐趣',
     content: '刚完成的改装项目：\n\n- BC Racing 绞牙避震\n- 17寸 Style 68 轮毂\n- 进气升级 BMC 风格\n- 排气改中段直通\n\n驾驶感受提升非常明显，弯道支撑性好了很多。',
     type: 'IMAGE',
-    images: ['https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&h=500&fit=crop', 'https://images.unsplash.com/photo-1542362567-b07e54358753?w=800&h=500&fit=crop', 'https://images.unsplash.com/photo-1583121274602-3e2820c6914a?w=800&h=500&fit=crop'],
+    images: ['/cars/car-03-16x9.svg', '/cars/car-06-3x4.svg', '/cars/car-05-4x3.svg'],
     communityId: 'comm2',
     authorId: 'user2',
     voteScore: 156,
@@ -244,7 +244,7 @@ export const mockPosts: Post[] = [
     title: 'EA888 Gen3 烧机油解决方案汇总',
     content: 'EA888 第三代烧机油问题比前两代好很多，但还是有些车主会遇到。这里汇总几个常见解决方案：\n\n1. 检查油气分离器\n2. 更换改进型活塞环\n3. 使用粘度更高的机油 5W-40\n4. 定期清洁进气道积碳',
     type: 'IMAGE',
-    images: ['https://images.unsplash.com/photo-1606664515524-ed2f65f84f5a?w=800&h=500&fit=crop', 'https://images.unsplash.com/photo-1619405399517-d7fce0f130b2?w=800&h=500&fit=crop'],
+    images: ['/cars/car-08-9x16.svg', '/cars/car-07-16x9.svg'],
     communityId: 'comm4',
     authorId: 'user3',
     voteScore: 234,
@@ -276,7 +276,7 @@ export const mockPosts: Post[] = [
     title: '奥迪 B8 底盘异响排查全过程',
     content: '最近我的 A4 B8 过减速带时前悬挂有"咯噔"声，去检查发现是上控制臂球头松旷。\n\nB8 的前悬挂是五连杆结构，球头磨损是通病。换了两个上控制臂，问题解决。\n\n费用：原厂件 1800/根，工时费 600。',
     type: 'IMAGE',
-    images: ['https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=800&h=500&fit=crop', 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&h=500&fit=crop'],
+    images: ['/cars/car-09-4x3.svg', '/cars/car-11-16x9.svg'],
     communityId: 'comm5',
     authorId: 'user4',
     voteScore: 67,
@@ -292,7 +292,7 @@ export const mockPosts: Post[] = [
     title: '2JZ 千匹改装记录：从 300 到 1000 匹',
     content: '历时三个月，终于完成了 2JZ-GTE 的千匹改装。\n\n核心改装件：\n- Precision 6766 涡轮\n- Haltech Elite 2500 ECU\n- ID2200 喷油器\n- 强化锻造活塞连杆\n\nDyno 实测：轮上 980 匹 @ 2.2bar',
     type: 'IMAGE',
-    images: ['https://images.unsplash.com/photo-1626668011687-8a114cf5a34c?w=800&h=500&fit=crop', 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=800&h=500&fit=crop'],
+    images: ['/cars/car-15-16x9.svg', '/cars/car-10-3x4.svg'],
     communityId: 'comm6',
     authorId: 'user9',
     voteScore: 523,
@@ -308,7 +308,7 @@ export const mockPosts: Post[] = [
     title: '新手求问：高尔夫 MK7 GTI 值不值得入？',
     content: '预算15万左右，想入一台二手 MK7 GTI。主要日常代步，偶尔跑跑山路。\n\n请问各位大佬：\n1. 哪一年的比较靠谱？\n2. EA888 Gen3 可靠性怎么样？\n3. DSG 变速箱有没有通病？',
     type: 'IMAGE',
-    images: ['https://images.unsplash.com/photo-1619405399517-d7fce0f130b2?w=800&h=500&fit=crop'],
+    images: ['/cars/car-02-3x4.svg'],
     communityId: 'comm4',
     authorId: 'user10',
     voteScore: 45,
@@ -324,7 +324,7 @@ export const mockPosts: Post[] = [
     title: 'E46 翻新日记：让 20 年的老车重获新生',
     content: '收了一台 2003 年的 325i，里程 22 万公里。准备做一次全面翻新。\n\n计划项目：\n- 全车喷漆\n- 内饰翻新\n- 发动机大修\n- 底盘件全部更换\n\n会持续更新进度！',
     type: 'IMAGE',
-    images: ['https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&h=500&fit=crop', 'https://images.unsplash.com/photo-1583121274602-3e2820c6914a?w=800&h=500&fit=crop', 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&h=500&fit=crop'],
+    images: ['/cars/car-13-4x3.svg', '/cars/car-16-9x16.svg', '/cars/car-19-16x9.svg'],
     communityId: 'comm2',
     authorId: 'user5',
     voteScore: 198,
@@ -340,7 +340,7 @@ export const mockPosts: Post[] = [
     title: '奔驰 W222 空气悬挂维修经验分享',
     content: 'W222 的空气悬挂到了10万公里基本都要出问题。\n\n我的 S400L 右前气囊漏气了，4S 报价 2.8 万一根。\n\n后来找了专修店换了 Arnott 副厂件，5500 搞定，质量很不错，推荐。',
     type: 'IMAGE',
-    images: ['https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&h=500&fit=crop', 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=500&fit=crop'],
+    images: ['/cars/car-14-3x4.svg', '/cars/car-17-4x3.svg'],
     communityId: 'comm1',
     authorId: 'user7',
     voteScore: 134,
@@ -356,7 +356,7 @@ export const mockPosts: Post[] = [
     title: '保时捷 997.2 Carrera S 提车作业',
     content: '终于实现了梦想，提了一台 2010 年的 997.2 Carrera S。\n\nPDK 变速箱 + Sport Chrono 组件，选装清单很长。\n\n这代 911 是最经典的形态，开起来也是最纯粹的。',
     type: 'IMAGE',
-    images: ['https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=500&fit=crop', 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&h=500&fit=crop'],
+    images: ['/cars/car-07-16x9.svg', '/cars/car-18-3x4.svg'],
     communityId: 'comm3',
     authorId: 'user6',
     voteScore: 267,
@@ -372,7 +372,7 @@ export const mockPosts: Post[] = [
     title: 'B58 一阶程序实测：0-100 提升多少？',
     content: '给我的 G20 340i 刷了一阶程序，实测数据分享：\n\n原厂：0-100 4.8s\n一阶后：0-100 4.2s\n\n马力从 374 提升到 430，扭矩从 500 提升到 580。\n\n感受：低扭明显增强，推背感更强。',
     type: 'IMAGE',
-    images: ['https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&h=500&fit=crop', 'https://images.unsplash.com/photo-1583121274602-3e2820c6914a?w=800&h=500&fit=crop'],
+    images: ['/cars/car-12-9x16.svg', '/cars/car-03-16x9.svg'],
     communityId: 'comm3',
     authorId: 'user8',
     voteScore: 189,
@@ -405,7 +405,7 @@ export const mockPosts: Post[] = [
     content: '换装 aftermarket 排气后拆下来的原厂中尾段，使用约 2 万公里，无磕碰无锈蚀。\n\n包含：\n- 中段管路\n- 尾消声器\n- 全套安装垫片和卡箍\n\n顺丰包邮，不议价。',
     type: 'TRADE',
     price: '2800',
-    images: ['https://images.unsplash.com/photo-1606664515524-ed2f65f84f5a?w=800&h=500&fit=crop', 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&h=500&fit=crop'],
+    images: ['/cars/car-05-4x3.svg', '/cars/car-20-9x16.svg'],
     communityId: 'comm2',
     authorId: 'user3',
     voteScore: 34,
@@ -422,7 +422,7 @@ export const mockPosts: Post[] = [
     content: '个人一手车，2006 年上牌，行驶 14.8 万公里。\n\n车况：\n- M54B30 发动机，运行平稳，无渗油\n- 5 速手动变速箱，换挡顺滑\n- 原版原漆，无事故\n- 内饰磨损轻微\n- 年检到 2026 年 12 月\n\n坐标上海，可过户。',
     type: 'TRADE',
     price: '68000',
-    images: ['https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&h=500&fit=crop', 'https://images.unsplash.com/photo-1542362567-b07e54358753?w=800&h=500&fit=crop', 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&h=500&fit=crop'],
+    images: ['/cars/car-11-16x9.svg', '/cars/car-01-4x3.svg', '/cars/car-06-3x4.svg'],
     communityId: 'comm2',
     authorId: 'user5',
     voteScore: 89,
@@ -439,7 +439,7 @@ export const mockPosts: Post[] = [
     content: '从 G20 340i 上拆下来的原厂涡轮和中冷器，升级大涡轮后闲置。\n\n涡轮型号：MHI TD04-13T\n中冷：原厂风冷\n\n使用里程约 3 万公里，无故障码，运转正常。\n适合原厂替换或一阶改装基础件。',
     type: 'TRADE',
     price: '12000',
-    images: ['https://images.unsplash.com/photo-1606664515524-ed2f65f84f5a?w=800&h=500&fit=crop'],
+    images: ['/cars/car-15-16x9.svg'],
     communityId: 'comm3',
     authorId: 'user9',
     voteScore: 56,
@@ -984,4 +984,70 @@ export const presetCarModels = [
   // 福特
   { slug: 'mustang-s550', brand: '福特', code: 'Mustang_S550', displayName: '福特 Mustang S550' },
   { slug: 'ecoboost', brand: '福特', code: 'EcoBoost', displayName: '福特 EcoBoost 发动机' },
+  // 玛莎拉蒂
+  { slug: 'm139', brand: '玛莎拉蒂', code: 'M139', displayName: '玛莎拉蒂 M139' },
+  { slug: 'mc20', brand: '玛莎拉蒂', code: 'MC20', displayName: '玛莎拉蒂 MC20' },
+  { slug: 'nettuno', brand: '玛莎拉蒂', code: 'Nettuno', displayName: '玛莎拉蒂 Nettuno 发动机' },
+  // 兰博基尼
+  { slug: 'huracan', brand: '兰博基尼', code: 'Huracan', displayName: '兰博基尼 Huracan' },
+  { slug: 'urus', brand: '兰博基尼', code: 'Urus', displayName: '兰博基尼 Urus' },
+  // 法拉利
+  { slug: 'f8', brand: '法拉利', code: 'F8', displayName: '法拉利 F8 Tributo' },
+  { slug: '296', brand: '法拉利', code: '296', displayName: '法拉利 296 GTB' },
+  // 宾利
+  { slug: 'continental', brand: '宾利', code: 'Continental', displayName: '宾利 Continental GT' },
+  // 劳斯莱斯
+  { slug: 'ghost', brand: '劳斯莱斯', code: 'Ghost', displayName: '劳斯莱斯 Ghost' },
+  // 雪佛兰
+  { slug: 'camaro', brand: '雪佛兰', code: 'Camaro', displayName: '雪佛兰 Camaro' },
+  { slug: 'corvette', brand: '雪佛兰', code: 'Corvette', displayName: '雪佛兰 Corvette' },
+  // 别克
+  { slug: 'regal', brand: '别克', code: 'Regal', displayName: '别克 Regal/君威' },
+  // 现代
+  { slug: 'i30n', brand: '现代', code: 'i30N', displayName: '现代 i30 N' },
+  { slug: 'elantra-n', brand: '现代', code: 'ElantraN', displayName: '现代 Elantra N' },
+  // 起亚
+  { slug: 'stinger', brand: '起亚', code: 'Stinger', displayName: '起亚 Stinger' },
+  // 标致
+  { slug: '208', brand: '标致', code: '208', displayName: '标致 208' },
+  // 沃尔沃
+  { slug: 's60', brand: '沃尔沃', code: 'S60', displayName: '沃尔沃 S60' },
+  { slug: 'xc90', brand: '沃尔沃', code: 'XC90', displayName: '沃尔沃 XC90' },
+  // 路虎
+  { slug: 'defender', brand: '路虎', code: 'Defender', displayName: '路虎 Defender' },
+  // 捷豹
+  { slug: 'ftype', brand: '捷豹', code: 'F-Type', displayName: '捷豹 F-Type' },
+  // 凯迪拉克
+  { slug: 'ct5', brand: '凯迪拉克', code: 'CT5', displayName: '凯迪拉克 CT5' },
+  { slug: 'ctsv', brand: '凯迪拉克', code: 'CTS-V', displayName: '凯迪拉克 CTS-V' },
+  // 特斯拉
+  { slug: 'model3', brand: '特斯拉', code: 'Model3', displayName: '特斯拉 Model 3' },
+  { slug: 'modely', brand: '特斯拉', code: 'ModelY', displayName: '特斯拉 Model Y' },
+  // 三菱
+  { slug: 'evo', brand: '三菱', code: 'EVO', displayName: '三菱 Lancer Evolution' },
+  { slug: '4g63', brand: '三菱', code: '4G63', displayName: '三菱 4G63 发动机' },
+  // 铃木
+  { slug: 'jimny', brand: '铃木', code: 'Jimny', displayName: '铃木 Jimny' },
+  { slug: 'swift-sport', brand: '铃木', code: 'SwiftSport', displayName: '铃木 Swift Sport' },
+  // 雷克萨斯
+  { slug: 'is-f', brand: '雷克萨斯', code: 'IS-F', displayName: '雷克萨斯 IS-F' },
+  { slug: 'lfa', brand: '雷克萨斯', code: 'LFA', displayName: '雷克萨斯 LFA' },
+  // 比亚迪
+  { slug: 'han', brand: '比亚迪', code: 'Han', displayName: '比亚迪 汉' },
+  { slug: 'seal', brand: '比亚迪', code: 'Seal', displayName: '比亚迪 海豹' },
+  // 蔚来
+  { slug: 'et5', brand: '蔚来', code: 'ET5', displayName: '蔚来 ET5' },
+  { slug: 'es6', brand: '蔚来', code: 'ES6', displayName: '蔚来 ES6' },
+  // 小鹏
+  { slug: 'p7', brand: '小鹏', code: 'P7', displayName: '小鹏 P7' },
+  // 理想
+  { slug: 'l9', brand: '理想', code: 'L9', displayName: '理想 L9' },
+  // 吉利
+  { slug: 'xingrui', brand: '吉利', code: 'Xingrui', displayName: '吉利 星瑞' },
+  // 领克
+  { slug: '03plus', brand: '领克', code: '03+', displayName: '领克 03+' },
+  // 极氪
+  { slug: '001', brand: '极氪', code: '001', displayName: '极氪 001' },
+  // 小米
+  { slug: 'su7', brand: '小米', code: 'SU7', displayName: '小米 SU7' },
 ];

@@ -58,7 +58,6 @@ const DRAFTS_KEY = 'wcz-drafts';
 interface DraftItem {
   id: string;
   postType: PostType;
-  title: string;
   content: string;
   url: string;
   selectedCommunity: string;
@@ -95,7 +94,6 @@ export default function SubmitPage() {
 
   const [postType, setPostType] = useState<PostType>('IMAGE');
   const [price, setPrice] = useState('');
-  const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [url, setUrl] = useState('');
   const [selectedCommunity, setSelectedCommunity] = useState('');
@@ -132,7 +130,7 @@ export default function SubmitPage() {
     }
   }, [selectedCommunity]);
 
-  const hasContent = title || content || url || images.length > 0;
+  const hasContent = content || url || images.length > 0;
 
   // Handle image file selection
   const handleImageSelect = useCallback((files: FileList | null) => {
@@ -158,7 +156,7 @@ export default function SubmitPage() {
       // Update existing draft
       const updated = drafts.map((d) =>
         d.id === editingDraftId
-          ? { ...d, postType, title, content, url, selectedCommunity, communitySearch, images, updatedAt: now }
+          ? { ...d, postType, content, url, selectedCommunity, communitySearch, images, updatedAt: now }
           : d
       );
       setDrafts(updated);
@@ -168,7 +166,7 @@ export default function SubmitPage() {
       // New draft
       const newDraft: DraftItem = {
         id: `draft-${now}`,
-        postType, title, content, url, selectedCommunity, communitySearch, images,
+        postType, content, url, selectedCommunity, communitySearch, images,
         updatedAt: now,
       };
       const updated = [newDraft, ...drafts];
@@ -183,7 +181,6 @@ export default function SubmitPage() {
   // Load a draft into the form
   const handleLoadDraft = (draft: DraftItem) => {
     setPostType(draft.postType);
-    setTitle(draft.title);
     setContent(draft.content);
     setUrl(draft.url);
     setSelectedCommunity(draft.selectedCommunity);
@@ -206,7 +203,6 @@ export default function SubmitPage() {
   // Clear form
   const handleClear = () => {
     setPostType('IMAGE');
-    setTitle('');
     setContent('');
     setUrl('');
     setImages([]);
@@ -261,7 +257,7 @@ export default function SubmitPage() {
               <div key={draft.id} className="px-4 py-3 flex items-center gap-3 hover:bg-secondary/50">
                 <div className="flex-1 min-w-0" onClick={() => handleLoadDraft(draft)}>
                   <p className="text-sm font-medium truncate cursor-pointer">
-                    {draft.title || '无标题'}
+                    {draft.content ? draft.content.slice(0, 30) : '无内容'}
                   </p>
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="text-xs text-text-secondary">{typeLabels[draft.postType]}</span>
@@ -359,19 +355,6 @@ export default function SubmitPage() {
         )}
       </div>
 
-      {/* Title */}
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="帖子标题"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          maxLength={300}
-          className="w-full px-4 py-3 border border-border rounded-lg text-sm focus:outline-none focus:border-primary"
-        />
-        <p className="text-xs text-text-secondary mt-1 text-right">{title.length}/300</p>
-      </div>
-
       {/* Image upload area */}
       {postType === 'IMAGE' && (
         <div className="mb-4">
@@ -411,11 +394,11 @@ export default function SubmitPage() {
       {/* Content */}
       <div className="mb-4">
         <textarea
-          placeholder={postType === 'IMAGE' ? '写点什么...' : '写下你的内容... (支持 Markdown)'}
+          placeholder={postType === 'IMAGE' ? '分享你的爱车故事...' : postType === 'TRADE' ? '描述一下宝贝情况...' : '说点什么...'}
           value={content}
           onChange={(e) => setContent(e.target.value)}
           className="w-full px-4 py-3 border border-border rounded-lg text-sm focus:outline-none focus:border-primary resize-none"
-          rows={postType === 'IMAGE' ? 4 : 10}
+          rows={postType === 'IMAGE' ? 5 : 8}
         />
       </div>
 
@@ -526,9 +509,9 @@ export default function SubmitPage() {
             存草稿
           </button>
           <button
-            disabled={!title || !selectedCommunity || submitting}
+            disabled={!hasContent || !selectedCommunity || submitting}
             onClick={async () => {
-              if (!title.trim() || !selectedCommunity) return;
+              if (!hasContent || !selectedCommunity) return;
               setSubmitting(true);
               setError('');
               try {
@@ -567,11 +550,14 @@ export default function SubmitPage() {
                   }
                 }
 
+                // Auto-generate title from content
+                const autoTitle = content.trim() ? content.trim().split('\n')[0].slice(0, 30) : (url || '分享');
+
                 const res = await fetch('/api/posts', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
-                    title,
+                    title: autoTitle,
                     content: postType !== 'LINK' ? content : undefined,
                     type: postType,
                     url: postType === 'LINK' ? url : undefined,

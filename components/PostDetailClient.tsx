@@ -125,7 +125,7 @@ export default function PostDetailClient({ postId }: { postId: string }) {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-3 md:px-4 py-4">
+    <div className="py-4">
       {/* Sticky top bar with close button */}
       <div className="sticky top-12 z-40 flex items-center justify-between mb-3 -mx-3 md:-mx-4 px-3 md:px-4 py-2 bg-secondary/95 backdrop-blur-sm">
         <button

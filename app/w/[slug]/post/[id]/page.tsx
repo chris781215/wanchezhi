@@ -1,5 +1,7 @@
 import { mockPosts } from '@/lib/mock-data';
 import PostDetailClient from '@/components/PostDetailClient';
+import Sidebar from '@/components/Sidebar';
+import TrendingCommunities from '@/components/TrendingCommunities';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -36,5 +38,22 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  return <PostDetailClient postId={id} />;
+  return (
+    <div className="max-w-7xl mx-auto px-3 md:px-4 py-4">
+      <div className="flex gap-6">
+        {/* Left sidebar - Desktop only */}
+        <Sidebar />
+
+        {/* Main content */}
+        <div className="flex-1 min-w-0">
+          <PostDetailClient postId={id} />
+        </div>
+
+        {/* Right sidebar - Desktop only */}
+        <div className="hidden lg:block w-64 shrink-0">
+          <TrendingCommunities />
+        </div>
+      </div>
+    </div>
+  );
 }

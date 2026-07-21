@@ -70,7 +70,7 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full py-2 bg-primary text-white rounded-full text-sm font-medium hover:bg-primary-hover disabled:opacity-50"
             >
-              {loading ? '登录中...' : '登录'}
+              {loading ? '登录中...' : '注册 & 登录'}
             </button>
           </form>
 

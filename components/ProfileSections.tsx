@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
-import { mockUsers } from '@/lib/mock-data';
 
 const CarIcon = ({ className }: { className?: string }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -24,11 +23,6 @@ const HeartIcon = ({ className }: { className?: string }) => (
 const HistoryIcon = ({ className }: { className?: string }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-);
-const EditIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
   </svg>
 );
 const CheckIcon = ({ className }: { className?: string }) => (
@@ -68,18 +62,34 @@ export default function ProfileSections({ userId, username, nickname }: ProfileS
   const { user } = useAuth();
   const isOwner = user?.username === username;
 
-  const profileUser = mockUsers.find((u) => u.id === userId || u.username === username);
-  const initialValues: Record<SectionKey, string> = {
-    currentCar: profileUser?.currentCar || '',
-    carHistory: profileUser?.carHistory || '',
-    expertise: profileUser?.expertise || '',
-    interests: profileUser?.interests || '',
-  };
-
-  const [values, setValues] = useState<Record<SectionKey, string>>(initialValues);
+  const [values, setValues] = useState<Record<SectionKey, string>>({
+    currentCar: '',
+    carHistory: '',
+    expertise: '',
+    interests: '',
+  });
+  const [loaded, setLoaded] = useState(false);
   const [editing, setEditing] = useState<SectionKey | null>(null);
   const [editValue, setEditValue] = useState('');
   const [saving, setSaving] = useState(false);
+
+  // Fetch user data from API (server-side source of truth)
+  useEffect(() => {
+    fetch(`/api/users/${encodeURIComponent(username)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data) {
+          setValues({
+            currentCar: data.data.currentCar || '',
+            carHistory: data.data.carHistory || '',
+            expertise: data.data.expertise || '',
+            interests: data.data.interests || '',
+          });
+        }
+        setLoaded(true);
+      })
+      .catch(() => setLoaded(true));
+  }, [username]);
 
   const handleEdit = (key: SectionKey) => {
     setEditing(key);
@@ -110,8 +120,9 @@ export default function ProfileSections({ userId, username, nickname }: ProfileS
     setEditValue('');
   };
 
-  const sections = sectionDefs.filter((s) => values[s.key] || editing === s.key);
+  if (!loaded) return null;
 
+  const sections = sectionDefs.filter((s) => values[s.key] || editing === s.key);
   if (sections.length === 0 && !isOwner) return null;
 
   return (
@@ -119,28 +130,22 @@ export default function ProfileSections({ userId, username, nickname }: ProfileS
       {sectionDefs.map(({ key, label, icon }) => {
         const isEditing = editing === key;
         const value = values[key];
-        if (!value && !isEditing) return null;
+        // Hide empty sections for non-owners; always show for owner
+        if (!value && !isEditing && !isOwner) return null;
 
         return (
-          <div key={key} className="bg-white border border-border rounded-lg p-3">
-            <div className="flex items-center justify-between mb-1.5">
-              <div className="flex items-center gap-1.5 text-sm font-medium text-text-secondary">
-                {icon}
-                <span>{label}</span>
-              </div>
-              {isOwner && !isEditing && (
-                <button
-                  onClick={() => handleEdit(key)}
-                  className="p-1 rounded hover:bg-secondary text-text-secondary hover:text-foreground transition-colors"
-                  title="编辑"
-                >
-                  <EditIcon className="w-3.5 h-3.5" />
-                </button>
-              )}
+          <div
+            key={key}
+            className={`bg-white border border-border rounded-lg p-3 ${isOwner && !isEditing ? 'cursor-pointer hover:border-primary/40 transition-colors' : ''}`}
+            onClick={() => { if (isOwner && !isEditing) handleEdit(key); }}
+          >
+            <div className="flex items-center gap-1.5 text-sm font-medium text-text-secondary mb-1.5">
+              {icon}
+              <span>{label}</span>
             </div>
 
             {isEditing ? (
-              <div className="space-y-2">
+              <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
                 <textarea
                   value={editValue}
                   onChange={(e) => setEditValue(e.target.value)}
@@ -167,10 +172,12 @@ export default function ProfileSections({ userId, username, nickname }: ProfileS
                   </button>
                 </div>
               </div>
-            ) : (
+            ) : value ? (
               <p className="text-sm leading-relaxed text-foreground whitespace-pre-wrap">
                 {value}
               </p>
+            ) : (
+              <p className="text-sm text-text-secondary/60 italic">点击添加</p>
             )}
           </div>
         );

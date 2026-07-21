@@ -1,6 +1,10 @@
 import { mockCommunities, mockPosts } from '@/lib/mock-data';
+import { loadDynamicCommunities, saveCommunity } from '@/lib/community-store';
 import BrandLogo from '@/components/BrandLogo';
 import CommunityTabs from '@/components/CommunityTabs';
+import SeniorUsers from '@/components/SeniorUsers';
+import NewMembers from '@/components/NewMembers';
+import Sidebar from '@/components/Sidebar';
 import { formatNumber } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -39,40 +43,62 @@ const FileTextIcon = ({ className }: { className?: string }) => (
 export default async function CommunityPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
-  const community = mockCommunities.find((c) => c.slug === decodedSlug);
-  const communityPosts = mockPosts.filter((p) => p.communityId === community?.id && p.type !== 'TRADE');
-  const tradePosts = mockPosts.filter((p) => p.communityId === community?.id && p.type === 'TRADE');
-  const hotCommunities = mockCommunities
-    .filter((c) => c.id !== community?.id)
-    .sort((a, b) => b.memberCount - a.memberCount)
-    .slice(0, 5);
 
+  // Load persisted dynamic communities into memory
+  const dynamicComms = loadDynamicCommunities();
+  dynamicComms.forEach((dc: any) => {
+    if (!mockCommunities.find((c) => c.slug === dc.slug)) {
+      dc.createdAt = new Date(dc.createdAt);
+      mockCommunities.push(dc);
+    }
+  });
+
+  let community = mockCommunities.find((c) => c.slug === decodedSlug);
+
+  // Auto-create community stub if not found (e.g. after server restart)
   if (!community) {
-    return (
-      <div className="max-w-3xl mx-auto px-4 py-16 text-center">
-        <h1 className="text-2xl font-bold mb-4">社区不存在</h1>
-        <p className="text-text-secondary mb-6">该社区可能已被删除或尚未创建</p>
-        <Link href="/" className="text-primary hover:underline">返回首页</Link>
-      </div>
-    );
+    const newComm = {
+      id: 'comm-' + Date.now(),
+      slug: decodedSlug,
+      brand: decodedSlug,
+      code: decodedSlug.toUpperCase(),
+      displayName: decodedSlug,
+      description: '',
+      postCount: 0,
+      memberCount: 1,
+      createdAt: new Date(),
+      createdById: 'user1',
+    } as any;
+    mockCommunities.push(newComm);
+    saveCommunity(newComm);
+    community = newComm;
   }
 
+  const communityPosts = mockPosts.filter((p) => p.communityId === community!.id && p.type !== 'TRADE');
+  const tradePosts = mockPosts.filter((p) => p.communityId === community!.id && p.type === 'TRADE');
+
   return (
-    <div className="max-w-5xl mx-auto px-3 md:px-4 py-4">
+    <div className="max-w-7xl mx-auto px-3 md:px-4 py-4">
+      <div className="flex gap-6">
+        {/* Left sidebar - Desktop only */}
+        <Sidebar />
+
+        {/* Main content */}
+        <div className="flex-1 min-w-0">
       {/* Community header */}
       <div className="bg-white border border-border rounded-lg overflow-hidden mb-4">
-        <div className={`h-24 bg-gradient-to-br ${bannerGradients[community.brand] || 'from-primary to-primary-hover'}`} />
+        <div className={`h-24 bg-gradient-to-br ${bannerGradients[community!.brand] || 'from-primary to-primary-hover'}`} />
         <div className="px-4 pb-4 -mt-10">
           <div className="flex items-end gap-4">
             <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-xl border-4 border-white shadow-md flex items-center justify-center shrink-0">
-              <BrandLogo brand={community.brand} size="md" />
+              <BrandLogo brand={community!.brand} size="md" />
             </div>
             <div className="flex-1 pt-12">
               <div className="flex items-center justify-between">
                 <div className="min-w-0">
-                  <h1 className="text-xl font-bold truncate">w/{community.displayName}</h1>
-                  {community.description && (
-                    <p className="text-sm text-text-secondary mt-0.5">{community.description}</p>
+                  <h1 className="text-xl font-bold truncate">w/{community!.displayName}</h1>
+                  {community!.description && (
+                    <p className="text-sm text-text-secondary mt-0.5">{community!.description}</p>
                   )}
                 </div>
                 <div className="flex gap-2 shrink-0 ml-3">
@@ -80,7 +106,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
                     加入
                   </button>
                   <Link
-                    href={`/submit?community=${community.slug}`}
+                    href={`/submit?community=${community!.slug}`}
                     className="flex items-center gap-1 px-4 py-1.5 border border-border rounded-full text-sm font-medium hover:bg-secondary transition-colors"
                   >
                     <PenIcon className="w-4 h-4" />
@@ -95,74 +121,55 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
           <div className="flex items-center gap-6 mt-3 text-sm">
             <div className="flex items-center gap-1.5">
               <UsersIcon className="w-3.5 h-3.5 text-text-secondary" />
-              <span className="font-bold">{formatNumber(community.memberCount)}</span>
+              <span className="font-bold">{formatNumber(community!.memberCount)}</span>
               <span className="text-text-secondary">成员</span>
             </div>
             <div className="flex items-center gap-1.5">
               <FileTextIcon className="w-3.5 h-3.5 text-text-secondary" />
-              <span className="font-bold">{formatNumber(community.postCount)}</span>
+              <span className="font-bold">{formatNumber(community!.postCount)}</span>
               <span className="text-text-secondary">帖子</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="flex gap-6">
-        <div className="flex-1 min-w-0">
           <CommunityTabs
-            community={community}
+            community={community!}
             communityPosts={communityPosts}
             tradePosts={tradePosts}
           />
         </div>
 
         {/* Community sidebar - Desktop only */}
-        <div className="hidden lg:block w-72 shrink-0 space-y-4">
+        <div className="hidden lg:block w-64 shrink-0 space-y-4">
           <div className="bg-white border border-border rounded-lg overflow-hidden">
             <div className="px-4 py-3 bg-primary text-white">
               <h3 className="font-semibold text-sm">关于社区</h3>
             </div>
             <div className="p-4 space-y-3">
-              {community.description && (
-                <p className="text-sm text-text-secondary">{community.description}</p>
+              {community!.description && (
+                <p className="text-sm text-text-secondary">{community!.description}</p>
               )}
               <div className="flex justify-between text-sm">
                 <span className="text-text-secondary">成员</span>
-                <span className="font-medium">{community.memberCount}</span>
+                <span className="font-medium">{community!.memberCount}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-text-secondary">帖子</span>
-                <span className="font-medium">{community.postCount}</span>
+                <span className="font-medium">{community!.postCount}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-text-secondary">创建于</span>
-                <span className="font-medium">{community.createdAt.toLocaleDateString()}</span>
+                <span className="font-medium">{new Date(community!.createdAt).toLocaleDateString()}</span>
               </div>
             </div>
           </div>
 
-          {/* Hot communities */}
-          <div className="bg-white border border-border rounded-lg overflow-hidden">
-            <div className="px-4 py-3 bg-primary text-white">
-              <h3 className="font-semibold text-sm">热门社区</h3>
-            </div>
-            <div className="divide-y divide-border">
-              {hotCommunities.map((comm) => (
-                <Link
-                  key={comm.id}
-                  href={`/w/${comm.slug}`}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-secondary transition-colors"
-                >
-                  <BrandLogo brand={comm.brand} size="sm" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium truncate">w/{comm.displayName}</p>
-                    <p className="text-xs text-text-secondary">{formatNumber(comm.memberCount)} 成员</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
+          {/* Senior users */}
+          <SeniorUsers />
+
+          {/* New members */}
+          <NewMembers />
         </div>
       </div>
     </div>

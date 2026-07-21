@@ -21,8 +21,8 @@ export default function RegisterPage() {
       setError('两次密码输入不一致');
       return;
     }
-    if (password.length < 8) {
-      setError('密码至少 8 位');
+    if (password.length < 6) {
+      setError('密码至少 6 位');
       return;
     }
     setError('');
@@ -81,8 +81,8 @@ export default function RegisterPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="至少 8 位"
-                minLength={8}
+                placeholder="至少 6 位"
+                minLength={6}
                 className="w-full px-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-primary"
                 required
               />

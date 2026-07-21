@@ -1,9 +1,5 @@
 import { NextResponse } from 'next/server';
-
-// TODO: Replace with actual Prisma + bcrypt implementation
-// import { PrismaClient } from '@prisma/client';
-// import bcrypt from 'bcryptjs';
-// const prisma = new PrismaClient();
+import { mockUsers } from '@/lib/mock-data';
 
 export async function POST(request: Request) {
   try {
@@ -13,25 +9,37 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: '邮箱和密码不能为空' }, { status: 400 });
     }
 
-    // Mock login - find user by email
-    const { mockUsers } = await import('@/lib/mock-data');
-    const foundUser = mockUsers.find((u: any) => u.email === email);
-    const mockUser = {
-      id: foundUser?.id || 'user1',
-      email: email,
-      username: foundUser?.username || email.split('@')[0],
-      nickname: foundUser?.nickname || '张三',
-      avatar: foundUser?.avatar || '/avatars/default.png',
-      points: foundUser?.points || 1250,
-    };
+    if (password.length < 6) {
+      return NextResponse.json({ success: false, error: '密码至少6位' }, { status: 400 });
+    }
 
-    const token = Buffer.from(JSON.stringify({ userId: mockUser.id, email: mockUser.email })).toString('base64');
+    // Find existing user or auto-register
+    let user = mockUsers.find((u: any) => u.email === email);
+
+    if (!user) {
+      // Auto-register: create new user
+      const username = email.split('@')[0];
+      user = {
+        id: 'user-' + Date.now(),
+        email,
+        username,
+        nickname: username,
+        avatar: '/avatars/default.png',
+        bio: '',
+        points: 0,
+        level: 1,
+        joinDate: new Date().toISOString(),
+      } as any;
+      mockUsers.push(user as any);
+    }
+
+    const token = Buffer.from(JSON.stringify({ userId: user!.id, email: user!.email, username: user!.username })).toString('base64');
 
     return NextResponse.json({
       success: true,
       data: {
         token,
-        user: mockUser,
+        user,
       },
     });
   } catch (error) {

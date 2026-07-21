@@ -1,9 +1,10 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { mockCommunities } from '@/lib/mock-data';
 import BrandLogo from '@/components/BrandLogo';
+import NewCommunities from '@/components/NewCommunities';
 
 // Inline SVG icons
 const HomeIcon = ({ className }: { className?: string }) => (
@@ -25,7 +26,21 @@ const CompassIcon = ({ className }: { className?: string }) => (
 export default function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
-  const hotCommunities = [...mockCommunities].sort((a, b) => b.memberCount - a.memberCount).slice(0, 5);
+  const [hotCommunities, setHotCommunities] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/communities')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          const sorted = [...data.data.items]
+            .sort((a: any, b: any) => b.memberCount - a.memberCount)
+            .slice(0, 5);
+          setHotCommunities(sorted);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const handleHomeClick = () => {
     if (pathname === '/') {
@@ -35,7 +50,8 @@ export default function Sidebar() {
 
   return (
     <aside className="hidden lg:block w-64 shrink-0">
-      <div className="sticky top-16 space-y-4">
+      <div className="space-y-4">
+        {pathname === '/' && (
         <nav className="space-y-1">
           {/* Main navigation */}
           <Link
@@ -61,6 +77,10 @@ export default function Sidebar() {
             <span>最新</span>
           </Link>
         </nav>
+        )}
+
+        {/* New communities */}
+        <NewCommunities />
 
         {/* Hot communities */}
         <div className="bg-white border border-border rounded-lg overflow-hidden">

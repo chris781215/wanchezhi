@@ -1,7 +1,17 @@
 import { NextResponse } from 'next/server';
 import { mockCommunities } from '@/lib/mock-data';
+import { loadDynamicCommunities, saveCommunity } from '@/lib/community-store';
 
 export async function GET(request: Request) {
+  // Load persisted dynamic communities into memory
+  const dynamicComms = loadDynamicCommunities();
+  dynamicComms.forEach((dc: any) => {
+    if (!mockCommunities.find((c) => c.slug === dc.slug)) {
+      dc.createdAt = new Date(dc.createdAt);
+      mockCommunities.push(dc);
+    }
+  });
+
   return NextResponse.json({
     success: true,
     data: { items: mockCommunities, total: mockCommunities.length },
@@ -33,5 +43,7 @@ export async function POST(request: Request) {
   };
   // Push to in-memory array so community page can find it
   mockCommunities.push(newCommunity as any);
+  // Persist to file so it survives hot reload
+  saveCommunity(newCommunity);
   return NextResponse.json({ success: true, data: newCommunity });
 }

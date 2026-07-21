@@ -1,17 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import Avatar from '@/components/Avatar';
 import FollowButton from '@/components/FollowButton';
 import { getBadgeLevel, formatNumber } from '@/lib/utils';
 import { Post, Comment } from '@/types';
 
-const EditIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-  </svg>
-);
 const CheckIcon = ({ className }: { className?: string }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -34,38 +29,43 @@ interface ProfileHeaderProps {
 }
 
 export default function ProfileHeader({ userId, username, nickname: initialNickname, points, postCount, posts, comments }: ProfileHeaderProps) {
-  const { user, updateUser } = useAuth();
+  const { user } = useAuth();
   const isOwner = user?.username === username;
 
-  const [nickname, setNickname] = useState(initialNickname);
-  const [editing, setEditing] = useState(false);
-  const [editValue, setEditValue] = useState(initialNickname);
+  const [bio, setBio] = useState('');
+  const [editingBio, setEditingBio] = useState(false);
+  const [bioValue, setBioValue] = useState('');
   const [saving, setSaving] = useState(false);
+
+  // Fetch bio from API
+  useEffect(() => {
+    fetch(`/api/users/${encodeURIComponent(username)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data?.bio) {
+          setBio(data.data.bio);
+        }
+      })
+      .catch(() => {});
+  }, [username]);
 
   const badge = getBadgeLevel(points);
 
-  const handleSave = async () => {
-    if (!editValue.trim()) return;
+  const handleSaveBio = async () => {
     setSaving(true);
     try {
       const res = await fetch(`/api/users/${encodeURIComponent(username)}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nickname: editValue.trim() }),
+        body: JSON.stringify({ bio: bioValue.trim() }),
       });
       const data = await res.json();
       if (data.success) {
-        setNickname(editValue.trim());
-        // Update auth context if it's the current user
-        if (isOwner) {
-          updateUser({ nickname: editValue.trim() });
-        }
+        setBio(bioValue.trim());
       }
-    } catch {
-      // silent
-    }
+    } catch {}
     setSaving(false);
-    setEditing(false);
+    setEditingBio(false);
   };
 
   return (
@@ -74,48 +74,60 @@ export default function ProfileHeader({ userId, username, nickname: initialNickn
       <div className="px-4 pb-4 -mt-10">
         <div className="flex items-end gap-4">
           <div className="border-4 border-white rounded-full shadow">
-            <Avatar nickname={nickname} points={points} size="lg" />
+            <Avatar nickname={initialNickname} points={points} size="lg" />
           </div>
           <div className="flex-1 pt-12">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1">
-                {editing ? (
-                  <div className="flex items-center gap-2">
-                    <input
-                      value={editValue}
-                      onChange={(e) => setEditValue(e.target.value)}
-                      className="text-xl font-bold border border-border rounded px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary max-w-[200px]"
-                      autoFocus
-                      maxLength={20}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleSave();
-                        if (e.key === 'Escape') { setEditing(false); setEditValue(nickname); }
-                      }}
-                    />
-                    <button onClick={handleSave} disabled={saving} className="p-1 rounded hover:bg-secondary text-primary">
-                      <CheckIcon className="w-4 h-4" />
-                    </button>
-                    <button onClick={() => { setEditing(false); setEditValue(nickname); }} className="p-1 rounded hover:bg-secondary text-text-secondary">
-                      <XIcon className="w-4 h-4" />
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <h1 className="text-xl font-bold">{nickname}</h1>
-                    {isOwner && (
-                      <button
-                        onClick={() => { setEditing(true); setEditValue(nickname); }}
-                        className="p-1 rounded hover:bg-secondary text-text-secondary hover:text-foreground transition-colors"
-                        title="修改昵称"
-                      >
-                        <EditIcon className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
-                )}
+                <h1 className="text-xl font-bold">{initialNickname}</h1>
                 <p className="text-sm text-text-secondary">@{username}</p>
               </div>
-              <FollowButton nickname={nickname} />
+              <FollowButton nickname={initialNickname} />
+            </div>
+
+            {/* Bio */}
+            <div className="mt-2">
+              {editingBio ? (
+                <div className="space-y-2">
+                  <textarea
+                    value={bioValue}
+                    onChange={(e) => setBioValue(e.target.value)}
+                    className="w-full border border-border rounded-lg p-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                    rows={2}
+                    placeholder="介绍一下自己..."
+                    autoFocus
+                    maxLength={200}
+                  />
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => { setEditingBio(false); setBioValue(bio); }}
+                      className="flex items-center gap-1 px-3 py-1.5 text-xs rounded-lg border border-border hover:bg-secondary transition-colors"
+                    >
+                      <XIcon className="w-3.5 h-3.5" />
+                      取消
+                    </button>
+                    <button
+                      onClick={handleSaveBio}
+                      disabled={saving}
+                      className="flex items-center gap-1 px-3 py-1.5 text-xs rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors disabled:opacity-50"
+                    >
+                      <CheckIcon className="w-3.5 h-3.5" />
+                      {saving ? '保存中...' : '保存'}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className={`text-sm text-text-secondary ${isOwner ? 'cursor-pointer hover:text-foreground transition-colors' : ''}`}
+                  onClick={() => { if (isOwner) { setEditingBio(true); setBioValue(bio); } }}
+                >
+                  {bio ? (
+                    <p className="whitespace-pre-wrap">{bio}</p>
+                  ) : isOwner ? (
+                    <p className="italic text-text-secondary/60">✏️ 点击添加个人简介</p>
+                  ) : null}
+                </div>
+              )}
             </div>
           </div>
         </div>

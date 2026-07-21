@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
-import { mockCommunities, mockPosts, mockUsers } from '@/lib/mock-data';
+import { mockPosts, mockUsers } from '@/lib/mock-data';
 import { useRouter, usePathname } from 'next/navigation';
 import Avatar from '@/components/Avatar';
 import BrandLogo from '@/components/BrandLogo';
@@ -67,7 +67,18 @@ export default function Navbar() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [draftCount, setDraftCount] = useState(0);
   const [notifCount, setNotifCount] = useState(0);
+  const [allCommunities, setAllCommunities] = useState<any[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
+
+  // Fetch communities from API (includes dynamic ones)
+  useEffect(() => {
+    fetch('/api/communities')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) setAllCommunities(data.data.items);
+      })
+      .catch(() => {});
+  }, []);
 
   // Read draft count from localStorage
   useEffect(() => {
@@ -92,8 +103,8 @@ export default function Navbar() {
   // Search across communities, posts, and users
   const q = searchQuery.toLowerCase();
   const filteredCommunities = searchQuery.trim()
-    ? mockCommunities.filter(
-        (c) =>
+    ? allCommunities.filter(
+        (c: any) =>
           c.displayName.toLowerCase().includes(q) ||
           c.brand.toLowerCase().includes(q) ||
           c.code.toLowerCase().includes(q) ||
@@ -499,10 +510,10 @@ export default function Navbar() {
             <div className="px-3 py-2 bg-primary text-white">
               <h3 className="font-semibold text-xs">热门社区</h3>
             </div>
-            {[...mockCommunities]
-              .sort((a, b) => b.memberCount - a.memberCount)
+            {[...allCommunities]
+              .sort((a: any, b: any) => b.memberCount - a.memberCount)
               .slice(0, 5)
-              .map((comm) => (
+              .map((comm: any) => (
                 <Link
                   key={comm.id}
                   href={`/w/${comm.slug}`}

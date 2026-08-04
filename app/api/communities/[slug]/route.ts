@@ -1,7 +1,19 @@
 import { NextResponse } from 'next/server';
-import { mockCommunities } from '@/lib/mock-data';
+import { mockCommunities, mockUsers } from '@/lib/mock-data';
 import { loadDynamicCommunities, saveCommunity } from '@/lib/community-store';
 import { loadDynamicUsers } from '@/lib/user-store';
+
+function ensureDynamicUsersLoaded() {
+  const dynamicUsers = loadDynamicUsers();
+  dynamicUsers.forEach((du: any) => {
+    const idx = mockUsers.findIndex((u: any) => u.id === du.id);
+    if (idx >= 0) {
+      mockUsers[idx] = { ...mockUsers[idx], ...du };
+    } else {
+      mockUsers.push(du);
+    }
+  });
+}
 
 export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -39,8 +51,11 @@ export async function PUT(request: Request, { params }: { params: Promise<{ slug
   const body = await request.json();
   const { description, displayName, createdById } = body;
 
-  // Check if the requester is the community creator
-  if (createdById && community.createdById !== createdById) {
+  // Check if the requester is the community creator or admin
+  ensureDynamicUsersLoaded();
+  const requester = mockUsers.find((u: any) => u.id === createdById);
+  const isAdmin = requester && (requester as any).isAdmin === true;
+  if (createdById && community.createdById !== createdById && !isAdmin) {
     return NextResponse.json({ success: false, error: '只有版主可以编辑社区信息' }, { status: 403 });
   }
 

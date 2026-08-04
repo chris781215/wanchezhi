@@ -37,8 +37,8 @@ export default function CommunityEditButton({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
-  // Only the community creator can edit
-  if (!user || user.id !== createdById) return null;
+  // Only the community creator or admin can edit
+  if (!user || (user.id !== createdById && !user.isAdmin)) return null;
 
   const handleSave = async () => {
     setSaving(true);

@@ -9,6 +9,7 @@ interface AuthUser {
   nickname: string;
   avatar?: string;
   points: number;
+  isAdmin?: boolean;
 }
 
 interface AuthContextType {

@@ -10,5 +10,17 @@
     "memberCount": 1,
     "createdAt": "2026-08-04T06:34:58.463Z",
     "createdById": "user-1784590936120"
+  },
+  {
+    "id": "comm-1785886566944",
+    "slug": "e46",
+    "brand": "宝马",
+    "code": "E46",
+    "displayName": "E46",
+    "description": "测试社区",
+    "postCount": 0,
+    "memberCount": 1,
+    "createdAt": "2026-08-04T23:36:06.944Z",
+    "createdById": "user-1784590936120"
   }
 ]

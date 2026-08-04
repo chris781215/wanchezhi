@@ -1,7 +1,4 @@
-import fs from 'fs';
-import path from 'path';
-
-const VOTES_FILE = path.join(process.cwd(), 'data', 'votes.json');
+import { readDataFile, writeDataFile } from '@/lib/data-store';
 
 export interface Vote {
   id: string;
@@ -13,29 +10,15 @@ export interface Vote {
 }
 
 export function loadVotes(): Vote[] {
-  try {
-    if (fs.existsSync(VOTES_FILE)) {
-      const raw = fs.readFileSync(VOTES_FILE, 'utf-8');
-      return JSON.parse(raw);
-    }
-  } catch {
-    // ignore
-  }
-  return [];
+  return readDataFile('votes.json') as Vote[];
 }
 
 export function saveVotes(votes: Vote[]) {
-  try {
-    fs.mkdirSync(path.dirname(VOTES_FILE), { recursive: true });
-    fs.writeFileSync(VOTES_FILE, JSON.stringify(votes, null, 2));
-  } catch {
-    // ignore
-  }
+  writeDataFile('votes.json', votes);
 }
 
 export function addVote(vote: Vote) {
   const votes = loadVotes();
-  // Remove existing vote from same user on same target
   const filtered = votes.filter(
     (v) => !(v.userId === vote.userId && v.targetId === vote.targetId && v.targetType === vote.targetType)
   );

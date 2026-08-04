@@ -14,3 +14,9 @@ export function savePost(post: any) {
   }
   writeDataFile('posts.json', dynamic);
 }
+
+export function deletePost(postId: string) {
+  const dynamic = loadDynamicPosts();
+  const filtered = dynamic.filter((p: any) => p.id !== postId);
+  writeDataFile('posts.json', filtered);
+}

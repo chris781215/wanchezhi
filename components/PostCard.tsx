@@ -10,14 +10,15 @@ import Avatar from '@/components/Avatar';
 import { useAuth } from '@/lib/auth-context';
 
 // Inline SVG icons
-const UpIcon = ({ className, fill }: { className?: string; fill?: string }) => (
-  <svg className={className} fill={fill || 'none'} viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+const HeartIcon = ({ className, fill }: { className?: string; fill?: string }) => (
+  <svg className={className} fill={fill || 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={fill ? 0 : 2}>
+    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
   </svg>
 );
-const DownIcon = ({ className, fill }: { className?: string; fill?: string }) => (
-  <svg className={className} fill={fill || 'none'} viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+const BrokenHeartIcon = ({ className, fill }: { className?: string; fill?: string }) => (
+  <svg className={className} fill={fill || 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={fill ? 0 : 2}>
+    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+    <path d="M13.5 5.5L11 10l3 2-2.5 4" stroke="currentColor" strokeWidth={1.5} fill="none" strokeLinecap="round"/>
   </svg>
 );
 const CommentIcon = ({ className }: { className?: string }) => (
@@ -157,39 +158,11 @@ export default function PostCard({ post, rank }: PostCardProps) {
 
   return (
     <article onClick={handleClick} className="bg-white border border-border rounded-lg hover:border-primary/30 transition-colors cursor-pointer">
-      <div className="flex">
-        {/* Vote column */}
-        <div className="hidden sm:flex flex-col items-center py-3 px-2 justify-between">
-          {/* Up arrow (top) */}
-          <button
-            onClick={(e) => handleVote(e, 1)}
-            className={`vote-btn rounded hover:bg-secondary transition-all ${
-              vote > 0
-                ? 'text-upvote'
-                : rank !== undefined && rank < 3
-                  ? 'text-amber-500 hot-vote-glow'
-                  : 'text-text-secondary'
-            }`}
-          >
-            <UpIcon className="w-6 h-6" fill={vote > 0 ? 'currentColor' : 'none'} />
-          </button>
-          {/* Score (center) */}
-          <span className={`text-xs font-bold ${vote > 0 ? 'text-upvote' : vote < 0 ? 'text-downvote' : 'text-foreground'}`}>
-            {score}
-          </span>
-          {/* Down arrow (bottom) */}
-          <button
-            onClick={(e) => handleVote(e, -1)}
-            className={`vote-btn rounded hover:bg-secondary ${vote < 0 ? 'text-downvote' : 'text-text-secondary'}`}
-          >
-            <DownIcon className="w-6 h-6" fill={vote < 0 ? 'currentColor' : 'none'} />
-          </button>
-        </div>
-
+      <div>
         {/* Content */}
-        <div className="flex-1 p-3 min-w-0">
+        <div className="p-3 min-w-0 text-center">
           {/* Meta info */}
-          <div className="flex items-center gap-3 text-base text-text-secondary mb-2">
+          <div className="flex items-center justify-center gap-3 text-base text-text-secondary mb-2 flex-wrap">
             {post.community && (
               <>
                 <BrandLogo brand={post.community.brand} size="md" />
@@ -242,7 +215,7 @@ export default function PostCard({ post, rank }: PostCardProps) {
 
           {/* Image thumbnails */}
           {hasImages && (
-            <div className="flex gap-1.5 mb-3">
+            <div className="flex gap-1.5 mb-3 justify-center">
               {post.images!.slice(0, 3).map((img, idx) => (
                 <div key={idx} className="rounded-md overflow-hidden bg-secondary shrink-0">
                   <img src={img} alt="" className="h-20 w-auto object-contain" />
@@ -266,12 +239,12 @@ export default function PostCard({ post, rank }: PostCardProps) {
           {/* Actions */}
           <div className="flex items-center gap-4 text-sm text-text-secondary">
             {/* Mobile vote */}
-            <div className="flex sm:hidden items-center gap-2">
+            <div className="flex items-center gap-2">
               <button
                 onClick={(e) => handleVote(e, 1)}
                 className={`vote-btn ${vote > 0 ? 'text-upvote' : ''}`}
               >
-                <UpIcon className="w-5 h-5" fill={vote > 0 ? 'currentColor' : 'none'} />
+                <HeartIcon className="w-5 h-5" fill={vote > 0 ? 'currentColor' : 'none'} />
               </button>
               <span className={`font-bold ${vote > 0 ? 'text-upvote' : vote < 0 ? 'text-downvote' : ''}`}>
                 {score}
@@ -280,7 +253,7 @@ export default function PostCard({ post, rank }: PostCardProps) {
                 onClick={(e) => handleVote(e, -1)}
                 className={`vote-btn ${vote < 0 ? 'text-downvote' : ''}`}
               >
-                <DownIcon className="w-5 h-5" fill={vote < 0 ? 'currentColor' : 'none'} />
+                <BrokenHeartIcon className="w-5 h-5" fill={vote < 0 ? 'currentColor' : 'none'} />
               </button>
             </div>
 

@@ -15,9 +15,9 @@ const ChevronRightIcon = ({ className }: { className?: string }) => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
   </svg>
 );
-const UpIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+const HeartIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
   </svg>
 );
 const CommentIcon = ({ className }: { className?: string }) => (
@@ -93,7 +93,7 @@ export default function HeroCarousel({ posts }: HeroCarouselProps) {
           </h2>
           <div className="flex items-center gap-4 text-white/70 text-xs">
             <span className="flex items-center gap-1">
-              <UpIcon className="w-3.5 h-3.5" />
+              <HeartIcon className="w-3.5 h-3.5" />
               <span className="font-bold text-white/90">{post.voteScore}</span> 赞
             </span>
             <span className="flex items-center gap-1">

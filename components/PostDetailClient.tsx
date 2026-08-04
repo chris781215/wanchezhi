@@ -11,14 +11,15 @@ import BrandLogo from '@/components/BrandLogo';
 import Avatar from '@/components/Avatar';
 
 // Inline SVG icons
-const UpIcon = ({ className, fill }: { className?: string; fill?: string }) => (
-  <svg className={className} fill={fill || 'none'} viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+const HeartIcon = ({ className, fill }: { className?: string; fill?: string }) => (
+  <svg className={className} fill={fill || 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={fill ? 0 : 2}>
+    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
   </svg>
 );
-const DownIcon = ({ className, fill }: { className?: string; fill?: string }) => (
-  <svg className={className} fill={fill || 'none'} viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+const BrokenHeartIcon = ({ className, fill }: { className?: string; fill?: string }) => (
+  <svg className={className} fill={fill || 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={fill ? 0 : 2}>
+    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+    <path d="M13.5 5.5L11 10l3 2-2.5 4" stroke="currentColor" strokeWidth={1.5} fill="none" strokeLinecap="round"/>
   </svg>
 );
 const CommentIcon = ({ className }: { className?: string }) => (
@@ -54,6 +55,11 @@ const ChevronLeftIcon = ({ className }: { className?: string }) => (
 const ChevronRightIcon = ({ className }: { className?: string }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+  </svg>
+);
+const TrashIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
   </svg>
 );
 
@@ -355,7 +361,7 @@ export default function PostDetailClient({ postId, initialPost }: { postId: stri
                 onClick={() => handleVote(1)}
                 className={`vote-btn rounded hover:bg-secondary ${vote > 0 ? 'text-upvote' : ''}`}
               >
-                <UpIcon className="w-6 h-6" fill={vote > 0 ? 'currentColor' : 'none'} />
+                <HeartIcon className="w-6 h-6" fill={vote > 0 ? 'currentColor' : 'none'} />
               </button>
               <span className={`font-bold px-1 ${vote > 0 ? 'text-upvote' : vote < 0 ? 'text-downvote' : ''}`}>
                 {score}
@@ -364,7 +370,7 @@ export default function PostDetailClient({ postId, initialPost }: { postId: stri
                 onClick={() => handleVote(-1)}
                 className={`vote-btn rounded hover:bg-secondary ${vote < 0 ? 'text-downvote' : ''}`}
               >
-                <DownIcon className="w-6 h-6" fill={vote < 0 ? 'currentColor' : 'none'} />
+                <BrokenHeartIcon className="w-6 h-6" fill={vote < 0 ? 'currentColor' : 'none'} />
               </button>
             </div>
 
@@ -385,6 +391,33 @@ export default function PostDetailClient({ postId, initialPost }: { postId: stri
               <ShareIcon className="w-4 h-4" />
               分享
             </button>
+
+            {(user?.id === post?.authorId || user?.isAdmin) && (
+              <button
+                onClick={async () => {
+                  if (!confirm('确定要删除这个帖子吗？')) return;
+                  try {
+                    const res = await fetch(`/api/posts/${postId}`, {
+                      method: 'DELETE',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ userId: user?.id, isAdmin: user?.isAdmin }),
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                      router.push('/');
+                    } else {
+                      alert(data.error || '删除失败');
+                    }
+                  } catch {
+                    alert('网络错误');
+                  }
+                }}
+                className="flex items-center gap-1 hover:text-red-500 text-text-secondary"
+              >
+                <TrashIcon className="w-4 h-4" />
+                删除
+              </button>
+            )}
           </div>
         </div>
       </article>

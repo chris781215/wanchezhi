@@ -4,9 +4,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Post } from '@/types';
 import { formatRelativeTime, truncateText } from '@/lib/utils';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import BrandLogo from '@/components/BrandLogo';
 import Avatar from '@/components/Avatar';
+import { useAuth } from '@/lib/auth-context';
 
 // Inline SVG icons
 const UpIcon = ({ className, fill }: { className?: string; fill?: string }) => (
@@ -47,26 +48,85 @@ interface PostCardProps {
 
 export default function PostCard({ post, rank }: PostCardProps) {
   const router = useRouter();
+  const { user } = useAuth();
   const [vote, setVote] = useState(post.userVote || 0);
   const [score, setScore] = useState(post.voteScore);
   const [bookmarked, setBookmarked] = useState(post.userBookmarked || false);
+  const [bookmarkCount, setBookmarkCount] = useState(post.bookmarkCount || 0);
 
-  const handleVote = (e: React.MouseEvent, value: number) => {
+  // Load persisted vote and bookmark state from API
+  useEffect(() => {
+    if (!user) return;
+    fetch(`/api/votes?targetId=${post.id}&targetType=post&userId=${user.id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setVote(data.data.userVote || 0);
+          setScore(data.data.score || 0);
+        }
+      })
+      .catch(() => {});
+    fetch(`/api/bookmarks?postId=${post.id}&userId=${user.id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setBookmarked(data.data.bookmarked || false);
+          setBookmarkCount(data.data.count || 0);
+        }
+      })
+      .catch(() => {});
+  }, [post.id, user]);
+
+  const handleVote = async (e: React.MouseEvent, value: number) => {
     e.stopPropagation();
-    if (vote === value) {
-      setScore(score - (value > 0 ? 3 : -1));
-      setVote(0);
-    } else {
-      const diff = value > 0 ? 3 : -1;
-      const oldDiff = vote > 0 ? 3 : vote < 0 ? -1 : 0;
-      setScore(score - oldDiff + diff);
-      setVote(value);
+    if (!user) return;
+    const newValue = vote === value ? 0 : value;
+    // Optimistic update
+    const oldDiff = vote > 0 ? 3 : vote < 0 ? -1 : 0;
+    const newDiff = newValue > 0 ? 3 : newValue < 0 ? -1 : 0;
+    setScore(score - oldDiff + newDiff);
+    setVote(newValue);
+    try {
+      const res = await fetch('/api/votes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, targetId: post.id, targetType: 'post', value: newValue }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setScore(data.data.score);
+        setVote(data.data.userVote);
+      }
+    } catch {
+      // revert on error
+      setScore(score + oldDiff - newDiff);
+      setVote(vote);
     }
   };
 
-  const handleBookmark = (e: React.MouseEvent) => {
+  const handleBookmark = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    setBookmarked(!bookmarked);
+    if (!user) return;
+    const newBookmarked = !bookmarked;
+    // Optimistic update
+    setBookmarked(newBookmarked);
+    setBookmarkCount(bookmarkCount + (newBookmarked ? 1 : -1));
+    try {
+      const res = await fetch('/api/bookmarks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, postId: post.id, action: newBookmarked ? 'add' : 'remove' }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setBookmarked(data.data.bookmarked);
+        setBookmarkCount(data.data.count);
+      }
+    } catch {
+      // revert on error
+      setBookmarked(bookmarked);
+      setBookmarkCount(bookmarkCount);
+    }
   };
 
   const handleShare = async (e: React.MouseEvent) => {
@@ -129,11 +189,11 @@ export default function PostCard({ post, rank }: PostCardProps) {
         {/* Content */}
         <div className="flex-1 p-3 min-w-0">
           {/* Meta info */}
-          <div className="flex items-center gap-1.5 text-xs text-text-secondary mb-2">
+          <div className="flex items-center gap-3 text-base text-text-secondary mb-2">
             {post.community && (
               <>
-                <BrandLogo brand={post.community.brand} size="sm" />
-                <Link href={`/w/${post.community.slug}`} className="font-bold text-foreground hover:text-primary" onClick={(e) => e.stopPropagation()}>
+                <BrandLogo brand={post.community.brand} size="md" />
+                <Link href={`/w/${post.community.slug}`} className="font-bold text-xl text-foreground hover:text-primary" onClick={(e) => e.stopPropagation()}>
                   w/{post.community.displayName}
                 </Link>
               </>
@@ -142,9 +202,9 @@ export default function PostCard({ post, rank }: PostCardProps) {
             {post.author && (
               <>
                 <Link href={`/u/${post.author.username}`} onClick={(e) => e.stopPropagation()}>
-                  <Avatar nickname={post.author.nickname} points={post.author.points} size="xs" />
+                  <Avatar nickname={post.author.nickname} points={post.author.points} size="md" />
                 </Link>
-                <Link href={`/u/${post.author.username}`} className="hover:text-primary font-medium" onClick={(e) => e.stopPropagation()}>
+                <Link href={`/u/${post.author.username}`} className="hover:text-primary font-medium text-xl" onClick={(e) => e.stopPropagation()}>
                   {post.author.nickname}
                 </Link>
               </>
@@ -154,7 +214,7 @@ export default function PostCard({ post, rank }: PostCardProps) {
           </div>
 
           {/* Title */}
-          <h3 className="text-base font-semibold mb-2 line-clamp-2">
+          <h3 className="text-xl font-semibold mb-2 line-clamp-2">
             {post.type === 'TRADE' && (
               <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold mr-1.5 align-middle bg-orange-100 text-orange-700 border border-orange-200">
                 <TagIcon className="w-3 h-3" />
@@ -204,7 +264,7 @@ export default function PostCard({ post, rank }: PostCardProps) {
           )}
 
           {/* Actions */}
-          <div className="flex items-center gap-4 text-xs text-text-secondary">
+          <div className="flex items-center gap-4 text-sm text-text-secondary">
             {/* Mobile vote */}
             <div className="flex sm:hidden items-center gap-2">
               <button
@@ -234,7 +294,7 @@ export default function PostCard({ post, rank }: PostCardProps) {
               className={`flex items-center gap-1 hover:text-foreground ${bookmarked ? 'text-primary' : ''}`}
             >
               <BookmarkIcon className="w-4 h-4" fill={bookmarked ? 'currentColor' : 'none'} />
-              <span>{post.bookmarkCount}</span>
+              <span>{bookmarkCount}</span>
             </button>
 
             <button onClick={handleShare} className="flex items-center gap-1 hover:text-foreground">

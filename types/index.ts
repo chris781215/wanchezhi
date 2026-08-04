@@ -29,6 +29,7 @@ export interface Community {
   postCount: number;
   memberCount: number;
   createdAt: Date;
+  updatedAt?: Date;
   createdById: string;
 }
 

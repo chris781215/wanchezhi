@@ -1,0 +1,18 @@
+[
+  {
+    "id": "vote-1785856924936",
+    "userId": "user-1784590936120",
+    "targetId": "post-1785825321120",
+    "targetType": "post",
+    "value": 1,
+    "createdAt": "2026-08-04T15:22:04.936Z"
+  },
+  {
+    "id": "vote-1785856021288",
+    "userId": "user-1",
+    "targetId": "post-1",
+    "targetType": "post",
+    "value": 1,
+    "createdAt": "2026-08-04T15:07:01.288Z"
+  }
+]

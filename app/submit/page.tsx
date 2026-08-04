@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { mockCommunities } from '@/lib/mock-data';
+import { mockCommunities, presetCarModels } from '@/lib/mock-data';
 import { getBadgeLevel } from '@/lib/utils';
 import BrandLogo from '@/components/BrandLogo';
 import { useAuth } from '@/lib/auth-context';
@@ -105,6 +105,17 @@ export default function SubmitPage() {
   const [drafts, setDrafts] = useState<DraftItem[]>([]);
   const [showDrafts, setShowDrafts] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
+  const [allCommunities, setAllCommunities] = useState<any[]>([]);
+
+  // Fetch communities from API (includes dynamic communities)
+  useEffect(() => {
+    fetch('/api/communities')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) setAllCommunities(data.data.items);
+      })
+      .catch(() => {});
+  }, []);
 
   // Load drafts list on mount
   useEffect(() => {
@@ -116,7 +127,7 @@ export default function SubmitPage() {
     const params = new URLSearchParams(window.location.search);
     const communitySlug = params.get('community');
     if (communitySlug && !selectedCommunity) {
-      const comm = mockCommunities.find(
+      const comm = allCommunities.find(
         (c) => c.slug === communitySlug || c.slug.toLowerCase() === communitySlug.toLowerCase()
       );
       if (comm) {
@@ -211,9 +222,10 @@ export default function SubmitPage() {
     setEditingDraftId(null);
   };
 
-  // Community search logic
+  // Community search logic (use fetched communities from API)
+  const searchSource = allCommunities.length > 0 ? allCommunities : mockCommunities;
   const matchedCommunities = communitySearch.trim()
-    ? mockCommunities.filter((c) => {
+    ? searchSource.filter((c) => {
         const q = communitySearch.toLowerCase();
         return (
           c.slug.toLowerCase().includes(q) ||
@@ -224,7 +236,21 @@ export default function SubmitPage() {
       })
     : [];
 
-  const noResults = communitySearch.trim().length > 0 && matchedCommunities.length === 0;
+  // Filter preset car models as additional suggestions
+  const matchedPresets = communitySearch.trim()
+    ? presetCarModels.filter((m) => {
+        const q = communitySearch.toLowerCase();
+        return (
+          !searchSource.some((c) => c.slug === m.slug) &&
+          (m.slug.toLowerCase().includes(q) ||
+            m.code.toLowerCase().includes(q) ||
+            m.displayName.toLowerCase().includes(q) ||
+            m.brand.toLowerCase().includes(q))
+        );
+      }).slice(0, 8)
+    : [];
+
+  const noResults = communitySearch.trim().length > 0 && matchedCommunities.length === 0 && matchedPresets.length === 0;
 
   const typeLabels: Record<PostType, string> = { IMAGE: '图文', TEXT: '纯文', LINK: '链接', TRADE: '交易' };
 
@@ -327,6 +353,24 @@ export default function SubmitPage() {
                 </div>
               </button>
             ))}
+            {matchedPresets.length > 0 && (
+              <div>
+                <p className="px-4 py-1.5 text-[10px] font-bold text-text-secondary uppercase tracking-wider bg-secondary">创建车型社区</p>
+                {matchedPresets.map((preset) => (
+                  <Link
+                    key={preset.slug}
+                    href={`/communities/create?preset=${preset.slug}`}
+                    className="w-full text-left px-4 py-2.5 text-sm hover:bg-secondary border-b border-border last:border-0 flex items-center gap-3"
+                  >
+                    <BrandLogo brand={preset.brand} size="sm" />
+                    <div>
+                      <p className="font-medium">w/{preset.displayName}</p>
+                      <p className="text-xs text-text-secondary">点击创建该社区</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
             {noResults && (
               <div className="px-4 py-3">
                 <p className="text-sm text-text-secondary mb-2">没有找到匹配的社区</p>
@@ -456,6 +500,9 @@ export default function SubmitPage() {
           <TagIcon className="w-3.5 h-3.5" />
           交易
         </button>
+        {!canTrade && (
+          <span className="text-[10px] text-text-secondary/60 ml-1">赛车手(Lv.3) 100积分可发配件交易 · 车神(Lv.4) 300积分可发整车交易</span>
+        )}
       </div>
 
       {/* Trade price input */}
@@ -564,6 +611,8 @@ export default function SubmitPage() {
                     images: uploadedUrls,
                     communityId: selectedCommunity,
                     price: postType === 'TRADE' ? price : undefined,
+                    authorId: user?.id,
+                    author: user ? { id: user.id, nickname: user.nickname, avatar: user.avatar, points: user.points, username: user.username, email: user.email, createdAt: new Date() } : undefined,
                   }),
                 });
                 const data = await res.json();

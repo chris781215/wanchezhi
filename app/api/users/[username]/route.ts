@@ -1,7 +1,21 @@
 import { NextResponse } from 'next/server';
 import { mockUsers } from '@/lib/mock-data';
+import { loadDynamicUsers } from '@/lib/user-store';
+
+function ensureDynamicUsersLoaded() {
+  const dynamicUsers = loadDynamicUsers();
+  dynamicUsers.forEach((du: any) => {
+    const idx = mockUsers.findIndex((u: any) => u.id === du.id);
+    if (idx >= 0) {
+      mockUsers[idx] = { ...mockUsers[idx], ...du };
+    } else {
+      mockUsers.push(du);
+    }
+  });
+}
 
 export async function GET(_request: Request, { params }: { params: Promise<{ username: string }> }) {
+  ensureDynamicUsersLoaded();
   const { username } = await params;
   const user = mockUsers.find((u) => u.username === username);
   if (!user) {

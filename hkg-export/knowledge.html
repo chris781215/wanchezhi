@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Knowledge Center - HKG Export</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+<body>
+  <nav class="navbar"><div class="nav-container"><a href="index.html" class="nav-logo">HKG EXPORT</a><ul class="nav-links"><li><a href="why-hkg.html">Why HKG</a></li><li><a href="about.html">About</a></li><li><a href="countries.html">Countries</a></li><li><a href="brands.html">Brands</a></li><li><a href="vehicle-types.html">Vehicle Types</a></li><li><a href="import-guide.html">Import Guide</a></li><li><a href="knowledge.html" style="color:var(--brand-primary)">Knowledge</a></li><li><a href="resources.html">Resources</a></li><li><a href="contact.html">Contact</a></li></ul><div class="nav-actions"><button class="lang-switch" onclick="toggleLanguage()">العربية</button><a href="contact.html" class="btn-cta">Get a Quote</a><div class="mobile-toggle"><span></span><span></span><span></span></div></div></div></nav>
+
+  <section class="page-header">
+    <div class="page-header-content">
+      <h1 class="page-title" data-i18n="knowledge.title">Knowledge Center</h1>
+      <p class="page-subtitle" data-i18n="knowledge.subtitle">Insights, guides, and resources for automotive importers</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="tabs-container">
+      <div class="tabs-nav">
+        <button class="tab-btn active" data-tab="faq" data-i18n="knowledge.tabs.faq">FAQ</button>
+        <button class="tab-btn" data-tab="dealer" data-i18n="knowledge.tabs.dealerGuide">Dealer Guide</button>
+        <button class="tab-btn" data-tab="business" data-i18n="knowledge.tabs.businessGuide">Business Guide</button>
+        <button class="tab-btn" data-tab="insights" data-i18n="knowledge.tabs.insights">Market Insights</button>
+        <button class="tab-btn" data-tab="cases" data-i18n="knowledge.tabs.cases">Case Studies</button>
+      </div>
+
+      <div class="tab-content active" data-content="faq">
+        <div class="card-grid">
+          <div class="card"><h3 class="card-title">What is the minimum order quantity?</h3><p class="card-desc">Most brands require a minimum of 1 unit for sample orders. Bulk orders of 10+ units receive preferential pricing and priority shipping.</p></div>
+          <div class="card"><h3 class="card-title">How long does shipping take?</h3><p class="card-desc">Transit times vary by destination: Middle East 15-25 days, Africa 25-40 days, South America 30-45 days, Asia 7-20 days.</p></div>
+          <div class="card"><h3 class="card-title">Do you handle customs clearance?</h3><p class="card-desc">Yes, we work with local customs brokers in each destination country to ensure smooth clearance and delivery.</p></div>
+          <div class="card"><h3 class="card-title">What payment methods do you accept?</h3><p class="card-desc">We accept T/T (bank transfer), L/C (letter of credit), and Western Union. Terms are negotiable for repeat customers.</p></div>
+          <div class="card"><h3 class="card-title">Can I visit the factories?</h3><p class="card-desc">Absolutely! We organize factory visits for serious buyers. Contact us to schedule a trip to Chinese automotive manufacturing facilities.</p></div>
+          <div class="card"><h3 class="card-title">What about after-sales support?</h3><p class="card-desc">We provide technical support, spare parts supply chains, and warranty management through our network of local partners.</p></div>
+        </div>
+      </div>
+
+      <div class="tab-content" data-content="dealer">
+        <div class="card-grid">
+          <div class="card"><div class="card-icon">📋</div><h3 class="card-title">Becoming an Authorized Dealer</h3><p class="card-desc">Learn about requirements, benefits, and the application process for becoming an authorized HKG dealer in your market.</p></div>
+          <div class="card"><div class="card-icon">📊</div><h3 class="card-title">Dealer Pricing Structure</h3><p class="card-desc">Understanding volume-based pricing, margin structures, and payment terms for dealership partners.</p></div>
+          <div class="card"><div class="card-icon">🎓</div><h3 class="card-title">Training & Certification</h3><p class="card-desc">Technical training programs for sales teams and service technicians on Chinese vehicle brands.</p></div>
+        </div>
+      </div>
+
+      <div class="tab-content" data-content="business">
+        <div class="card-grid">
+          <div class="card"><div class="card-icon">🚀</div><h3 class="card-title">Starting Your Import Business</h3><p class="card-desc">A comprehensive guide for entrepreneurs looking to start a vehicle import business in emerging markets.</p></div>
+          <div class="card"><div class="card-icon">📈</div><h3 class="card-title">Market Entry Strategy</h3><p class="card-desc">How to analyze your local market, identify demand, and choose the right brands and models for import.</p></div>
+          <div class="card"><div class="card-icon">🏦</div><h3 class="card-title">Financing & Insurance</h3><p class="card-desc">Trade finance options, cargo insurance, and risk management strategies for vehicle importers.</p></div>
+        </div>
+      </div>
+
+      <div class="tab-content" data-content="insights">
+        <div class="card-grid">
+          <div class="card"><div class="card-icon">⚡</div><h3 class="card-title">EV Market Trends 2024</h3><p class="card-desc">Chinese EV brands are dominating global exports. BYD alone exported over 240,000 units in 2023, a 340% increase.</p></div>
+          <div class="card"><div class="card-icon">🌍</div><h3 class="card-title">Middle East Market Analysis</h3><p class="card-desc">The GCC region shows strong demand for Chinese SUVs and pickups, with UAE leading imports at 1,200+ units/year.</p></div>
+          <div class="card"><div class="card-icon">📊</div><h3 class="card-title">Africa: The Next Frontier</h3><p class="card-desc">African markets are rapidly adopting Chinese vehicles due to competitive pricing and improving quality perception.</p></div>
+        </div>
+      </div>
+
+      <div class="tab-content" data-content="cases">
+        <div class="card-grid">
+          <div class="card"><div class="card-icon">🇯🇴</div><h3 class="card-title">Jordan: BYD Success Story</h3><p class="card-desc">How our Jordanian partner grew from 50 units to 500+ units annually by focusing on BYD's EV lineup and building charging infrastructure.</p></div>
+          <div class="card"><div class="card-icon">🇰🇪</div><h3 class="card-title">Kenya: Chery SUV Boom</h3><p class="card-desc">A Nairobi-based dealer leveraged Chery's SUV range to capture 15% market share in just 2 years.</p></div>
+          <div class="card"><div class="card-icon">🇨🇱</div><h3 class="card-title">Chile: New Energy Revolution</h3><p class="card-desc">Chile's green energy policies created massive demand for Chinese EVs. Our local partners now import 700+ units yearly.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer"><div class="footer-grid"><div><div class="footer-brand">HKG EXPORT</div><p class="footer-desc">Connecting Chinese automotive brands with global markets.</p><div class="footer-social"><a href="#">in</a><a href="#">tw</a><a href="#">fb</a></div></div><div class="footer-col"><h4>Quick Links</h4><ul><li><a href="why-hkg.html">Why HKG</a></li><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li></ul></div><div class="footer-col"><h4>Products</h4><ul><li><a href="countries.html">Countries</a></li><li><a href="brands.html">Brands</a></li><li><a href="vehicle-types.html">Vehicle Types</a></li></ul></div><div class="footer-col"><h4>Support</h4><ul><li><a href="resources.html">Resources</a></li><li><a href="knowledge.html">FAQ</a></li><li><a href="contact.html">Get a Quote</a></li></ul></div></div><div class="footer-bottom"><p>&copy; 2024 HKG Export. All rights reserved.</p><p>Hong Kong, China</p></div></footer>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script>applyLanguage(currentLang);</script>
+</body>
+</html>

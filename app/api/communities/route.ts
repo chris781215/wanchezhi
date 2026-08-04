@@ -20,7 +20,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { slug, brand, code, displayName, description } = body;
+  const { slug, brand, code, displayName, description, createdById } = body;
   if (!slug) {
     return NextResponse.json({ success: false, error: '社区代码不能为空' }, { status: 400 });
   }
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     postCount: 0,
     memberCount: 1,
     createdAt: new Date(),
-    createdById: 'user1',
+    createdById: createdById || 'user1',
   };
   // Push to in-memory array so community page can find it
   mockCommunities.push(newCommunity as any);

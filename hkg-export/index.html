@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HKG Export - Driving Global Trade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">HKG EXPORT</a>
+      
+      <ul class="nav-links">
+        <li><a href="why-hkg.html" data-i18n="nav.whyHkg">Why HKG</a></li>
+        <li><a href="about.html" data-i18n="nav.about">About</a></li>
+        <li><a href="countries.html" data-i18n="nav.countries">Countries</a></li>
+        <li><a href="brands.html" data-i18n="nav.brands">Brands</a></li>
+        <li><a href="vehicle-types.html" data-i18n="nav.vehicleTypes">Vehicle Types</a></li>
+        <li><a href="import-guide.html" data-i18n="nav.importGuide">Import Guide</a></li>
+        <li><a href="knowledge.html" data-i18n="nav.knowledge">Knowledge</a></li>
+        <li><a href="resources.html" data-i18n="nav.resources">Resources</a></li>
+        <li><a href="contact.html" data-i18n="nav.contact">Contact</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="lang-switch" onclick="toggleLanguage()">العربية</button>
+        <a href="contact.html" class="btn-cta" data-i18n="nav.getQuote">Get a Quote</a>
+        <div class="mobile-toggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span>🚗</span>
+        <span data-i18n="home.badge">Global Vehicle Export Leader</span>
+      </div>
+      <h1 class="hero-title">
+        <span data-i18n="home.title">Driving Global Trade</span><br>
+        <span class="gradient-text" data-i18n="home.titleHighlight">One Car at a Time</span>
+      </h1>
+      <p class="hero-subtitle" data-i18n="home.subtitle">
+        Connecting Chinese automotive brands with global markets. We handle everything from sourcing to delivery across 30+ countries.
+      </p>
+      <div class="hero-actions">
+        <a href="brands.html" class="btn-hero-primary" data-i18n="home.ctaPrimary">Explore Our Fleet</a>
+        <a href="import-guide.html" class="btn-hero-secondary" data-i18n="home.ctaSecondary">How It Works</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Bar -->
+  <section class="stats-bar">
+    <div class="stats-container">
+      <div class="stat-item fade-up">
+        <div class="stat-number" data-count="30" data-suffix="+">0+</div>
+        <div class="stat-label" data-i18n="home.stats.countries">Countries Served</div>
+      </div>
+      <div class="stat-item fade-up">
+        <div class="stat-number" data-count="20" data-suffix="+">0+</div>
+        <div class="stat-label" data-i18n="home.stats.brands">Partner Brands</div>
+      </div>
+      <div class="stat-item fade-up">
+        <div class="stat-number" data-count="10000" data-suffix="+">0+</div>
+        <div class="stat-label" data-i18n="home.stats.units">Units Exported</div>
+      </div>
+      <div class="stat-item fade-up">
+        <div class="stat-number" data-count="8" data-suffix="+">0+</div>
+        <div class="stat-label" data-i18n="home.stats.years">Years Experience</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Entry -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-badge" data-i18n="home.quickEntry.title">Quick Navigation</span>
+      <h2 class="section-title">Find What You Need</h2>
+    </div>
+    <div class="quick-entry">
+      <a href="countries.html" class="quick-card fade-up">
+        <div class="quick-card-icon">🌍</div>
+        <h3 class="quick-card-title" data-i18n="home.quickEntry.countries">Countries</h3>
+        <p class="quick-card-desc" data-i18n="home.quickEntry.countriesDesc">30+ markets worldwide</p>
+      </a>
+      <a href="brands.html" class="quick-card fade-up">
+        <div class="quick-card-icon">🏭</div>
+        <h3 class="quick-card-title" data-i18n="home.quickEntry.brands">Brands</h3>
+        <p class="quick-card-desc" data-i18n="home.quickEntry.brandsDesc">20+ Chinese automakers</p>
+      </a>
+      <a href="vehicle-types.html" class="quick-card fade-up">
+        <div class="quick-card-icon">🚗</div>
+        <h3 class="quick-card-title" data-i18n="home.quickEntry.vehicleTypes">Vehicle Types</h3>
+        <p class="quick-card-desc" data-i18n="home.quickEntry.vehicleTypesDesc">EV, Hybrid, SUV & more</p>
+      </a>
+      <a href="import-guide.html" class="quick-card fade-up">
+        <div class="quick-card-icon">📋</div>
+        <h3 class="quick-card-title" data-i18n="home.quickEntry.importGuide">Import Guide</h3>
+        <p class="quick-card-desc" data-i18n="home.quickEntry.importGuideDesc">Step-by-step process</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- Brand Scroll -->
+  <section class="section" style="background: white;">
+    <div class="section-header">
+      <h2 class="section-title" data-i18n="home.brands">Trusted Brands We Export</h2>
+    </div>
+    <div class="brand-scroll">
+      <div class="brand-track">
+        <span class="brand-item">BYD</span>
+        <span class="brand-item">GEELY</span>
+        <span class="brand-item">ZEEKR</span>
+        <span class="brand-item">CHERY</span>
+        <span class="brand-item">GREAT WALL</span>
+        <span class="brand-item">CHANGAN</span>
+        <span class="brand-item">SAIC</span>
+        <span class="brand-item">NIO</span>
+        <span class="brand-item">XPEV</span>
+        <span class="brand-item">LI AUTO</span>
+        <span class="brand-item">HAVAL</span>
+        <span class="brand-item">MG</span>
+        <!-- Duplicate for seamless loop -->
+        <span class="brand-item">BYD</span>
+        <span class="brand-item">GEELY</span>
+        <span class="brand-item">ZEEKR</span>
+        <span class="brand-item">CHERY</span>
+        <span class="brand-item">GREAT WALL</span>
+        <span class="brand-item">CHANGAN</span>
+        <span class="brand-item">SAIC</span>
+        <span class="brand-item">NIO</span>
+        <span class="brand-item">XPEV</span>
+        <span class="brand-item">LI AUTO</span>
+        <span class="brand-item">HAVAL</span>
+        <span class="brand-item">MG</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="section" style="background: var(--brand-dark); text-align: center;">
+    <div style="max-width: 700px; margin: 0 auto; padding: 0 2rem;">
+      <h2 style="font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; color: white; margin-bottom: 1rem;">Ready to Start Importing?</h2>
+      <p style="font-size: 1.1rem; color: rgba(255,255,255,0.7); margin-bottom: 2rem;">Get a personalized quote for your market. Our team is ready to help you succeed.</p>
+      <a href="contact.html" class="btn-hero-primary">Contact Sales Team</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">HKG EXPORT</div>
+        <p class="footer-desc" data-i18n="footer.desc">Connecting Chinese automotive brands with global markets. Your trusted partner in vehicle export.</p>
+        <div class="footer-social">
+          <a href="#">in</a>
+          <a href="#">tw</a>
+          <a href="#">fb</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.quickLinks">Quick Links</h4>
+        <ul>
+          <li><a href="why-hkg.html">Why HKG</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="knowledge.html">Knowledge Center</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.products">Products</h4>
+        <ul>
+          <li><a href="countries.html">Countries</a></li>
+          <li><a href="brands.html">Brands</a></li>
+          <li><a href="vehicle-types.html">Vehicle Types</a></li>
+          <li><a href="import-guide.html">Import Guide</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.support">Support</h4>
+        <ul>
+          <li><a href="resources.html">Resources</a></li>
+          <li><a href="knowledge.html#faq">FAQ</a></li>
+          <li><a href="contact.html">Get a Quote</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 HKG Export. <span data-i18n="footer.rights">All rights reserved.</span></p>
+      <p>Hong Kong, China</p>
+    </div>
+  </footer>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

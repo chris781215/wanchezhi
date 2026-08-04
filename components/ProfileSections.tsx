@@ -47,14 +47,14 @@ type SectionKey = 'currentCar' | 'carHistory' | 'expertise' | 'interests';
 const sectionDefs = [
   { key: 'currentCar' as SectionKey, label: '正在玩的车', icon: <CarIcon className="w-4 h-4" /> },
   { key: 'carHistory' as SectionKey, label: '玩过的车', icon: <HistoryIcon className="w-4 h-4" /> },
-  { key: 'expertise' as SectionKey, label: '兴趣点', icon: <WrenchIcon className="w-4 h-4" /> },
+  { key: 'expertise' as SectionKey, label: '想玩的车', icon: <CarIcon className="w-4 h-4" /> },
   { key: 'interests' as SectionKey, label: '兴趣爱好', icon: <HeartIcon className="w-4 h-4" /> },
 ];
 
 const sectionPlaceholders: Record<SectionKey, string> = {
   currentCar: '写下你现在的座驾吧，写明车型、年款、入手时间\n比如：2008 奔驰 S350 W221，2024年3月入手，日常代步 + 周末跑山',
   carHistory: '写下你玩过的车，写明车型、年款、使用时间\n比如：E46 325i（2020-2023）→ E90 330i（2023-2024）→ 现在这台',
-  expertise: '写下你的兴趣方向\n比如：JDM、大排量自吸、操控派、德系老车修复、涡轮升级...',
+  expertise: '写下你想玩的车，写明车型、年款\n比如：E46 M3、R34 GT-R、W221 S600、997 Turbo...',
   interests: '除了车，你还喜欢什么？\n比如：赛道日、自驾游、摄影、模型收藏...',
 };
 

@@ -51,7 +51,6 @@ export default function Sidebar() {
   return (
     <aside className="hidden lg:block w-64 shrink-0">
       <div className="space-y-4">
-        {pathname === '/' && (
         <nav className="space-y-1">
           {/* Main navigation */}
           <Link
@@ -77,7 +76,6 @@ export default function Sidebar() {
             <span>最新</span>
           </Link>
         </nav>
-        )}
 
         {/* New communities */}
         <NewCommunities />

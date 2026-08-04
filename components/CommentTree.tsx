@@ -4,6 +4,7 @@ import { Comment } from '@/types';
 import { formatRelativeTime, getBadgeLevel } from '@/lib/utils';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/lib/auth-context';
 
 // Inline SVG icons
 const UpIcon = ({ className, fill }: { className?: string; fill?: string }) => (
@@ -36,13 +37,17 @@ interface CommentItemProps {
   comment: Comment;
   depth?: number;
   allComments: Comment[];
+  onCommentAdded?: (newComment: any) => void;
 }
 
-function CommentItem({ comment, depth = 0, allComments }: CommentItemProps) {
+function CommentItem({ comment, depth = 0, allComments, onCommentAdded }: CommentItemProps) {
+  const { user } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
   const [vote, setVote] = useState(comment.userVote || 0);
   const [score, setScore] = useState(comment.voteScore);
   const [showReply, setShowReply] = useState(false);
+  const [replyText, setReplyText] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const children = allComments.filter((c) => c.parentId === comment.id);
 
@@ -56,6 +61,33 @@ function CommentItem({ comment, depth = 0, allComments }: CommentItemProps) {
       setScore(score - oldDiff + diff);
       setVote(value);
     }
+  };
+
+  const handleReply = async () => {
+    if (!replyText.trim()) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: replyText,
+          postId: comment.postId,
+          parentId: comment.id,
+          authorId: user?.id,
+          author: user ? { id: user.id, nickname: user.nickname, avatar: user.avatar, points: user.points } : undefined,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setReplyText('');
+        setShowReply(false);
+        onCommentAdded?.(data.data);
+      }
+    } catch (err) {
+      console.error('Reply error:', err);
+    }
+    setSubmitting(false);
   };
 
   return (
@@ -118,18 +150,24 @@ function CommentItem({ comment, depth = 0, allComments }: CommentItemProps) {
               <div className="mt-2">
                 <textarea
                   placeholder="写下你的回复..."
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
                   className="w-full p-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary resize-none"
                   rows={3}
                 />
                 <div className="flex justify-end gap-2 mt-2">
                   <button
-                    onClick={() => setShowReply(false)}
+                    onClick={() => { setShowReply(false); setReplyText(''); }}
                     className="px-3 py-1 text-xs text-text-secondary hover:text-foreground"
                   >
                     取消
                   </button>
-                  <button className="px-3 py-1 text-xs bg-primary text-white rounded-full hover:bg-primary-hover">
-                    回复
+                  <button
+                    onClick={handleReply}
+                    disabled={submitting || !replyText.trim()}
+                    className="px-3 py-1 text-xs bg-primary text-white rounded-full hover:bg-primary-hover disabled:opacity-50"
+                  >
+                    {submitting ? '提交中...' : '回复'}
                   </button>
                 </div>
               </div>
@@ -144,6 +182,7 @@ function CommentItem({ comment, depth = 0, allComments }: CommentItemProps) {
                     comment={child}
                     depth={depth + 1}
                     allComments={allComments}
+                    onCommentAdded={onCommentAdded}
                   />
                 ))}
               </div>
@@ -157,9 +196,10 @@ function CommentItem({ comment, depth = 0, allComments }: CommentItemProps) {
 
 interface CommentTreeProps {
   comments: Comment[];
+  onCommentAdded?: (newComment: any) => void;
 }
 
-export default function CommentTree({ comments }: CommentTreeProps) {
+export default function CommentTree({ comments, onCommentAdded }: CommentTreeProps) {
   const rootComments = comments.filter((c) => !c.parentId);
 
   return (
@@ -168,7 +208,7 @@ export default function CommentTree({ comments }: CommentTreeProps) {
         <p className="text-center text-text-secondary py-8">暂无评论，来发表第一条评论吧</p>
       ) : (
         rootComments.map((comment) => (
-          <CommentItem key={comment.id} comment={comment} allComments={comments} />
+          <CommentItem key={comment.id} comment={comment} allComments={comments} onCommentAdded={onCommentAdded} />
         ))
       )}
     </div>

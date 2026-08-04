@@ -10,15 +10,16 @@ interface UserProfileTabsProps {
   posts: Post[];
   userPosts: Post[];
   comments: Comment[];
+  bookmarkedPosts?: Post[];
 }
 
-export default function UserProfileTabs({ posts, userPosts, comments }: UserProfileTabsProps) {
+export default function UserProfileTabs({ posts, userPosts, comments, bookmarkedPosts = [] }: UserProfileTabsProps) {
   const [activeTab, setActiveTab] = useState<'posts' | 'comments' | 'bookmarks'>('posts');
 
   const tabs = [
     { id: 'posts' as const, label: '帖子', count: userPosts.length },
     { id: 'comments' as const, label: '评论', count: comments.length },
-    { id: 'bookmarks' as const, label: '收藏', count: 0 },
+    { id: 'bookmarks' as const, label: '收藏', count: bookmarkedPosts.length },
   ];
 
   return (
@@ -80,7 +81,11 @@ export default function UserProfileTabs({ posts, userPosts, comments }: UserProf
           )
         )}
         {activeTab === 'bookmarks' && (
-          <p className="text-center text-text-secondary py-8">暂无收藏</p>
+          bookmarkedPosts.length > 0 ? (
+            bookmarkedPosts.map((post) => <PostCard key={post.id} post={post} />)
+          ) : (
+            <p className="text-center text-text-secondary py-8">暂无收藏</p>
+          )
         )}
       </div>
     </>

@@ -6,7 +6,7 @@ import { useState } from 'react';
 interface AvatarProps {
   nickname: string;
   points: number;
-  size?: 'xs' | 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
 export default function Avatar({ nickname, points, size = 'md' }: AvatarProps) {
@@ -33,6 +33,7 @@ export default function Avatar({ nickname, points, size = 'md' }: AvatarProps) {
     sm: 'w-8 h-8 text-xs',
     md: 'w-12 h-12 text-base',
     lg: 'w-16 h-16 text-xl',
+    xl: 'w-24 h-24 text-3xl',
   };
 
   const badgeSizeClasses = {
@@ -40,6 +41,7 @@ export default function Avatar({ nickname, points, size = 'md' }: AvatarProps) {
     sm: 'w-3.5 h-3.5 text-[7px]',
     md: 'w-4 h-4 text-[8px]',
     lg: 'w-5 h-5 text-[10px]',
+    xl: 'w-6 h-6 text-xs',
   };
 
   const badgeOffset = {
@@ -47,6 +49,7 @@ export default function Avatar({ nickname, points, size = 'md' }: AvatarProps) {
     sm: '-bottom-0.5 -right-0.5',
     md: '-bottom-0.5 -right-0.5',
     lg: '-bottom-1 -right-1',
+    xl: '-bottom-1.5 -right-1.5',
   };
 
   const hasFrame = levelName === '赛车手' || levelName === '车神' || levelName === '传奇';

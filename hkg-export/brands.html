@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brands - HKG Export</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/custom.css">
+  <style>
+    .brand-card {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .brand-card .brand-front {
+      transition: opacity 0.3s ease;
+    }
+    .brand-card .brand-hover {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--brand-dark) 0%, #1a2d4a 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: var(--radius-lg);
+    }
+    .brand-card:hover .brand-hover {
+      opacity: 1;
+    }
+    .brand-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+    }
+    .brand-hover .brand-name-hover {
+      color: white;
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    .brand-hover .brand-desc-hover {
+      color: rgba(255,255,255,0.75);
+      font-size: 0.85rem;
+      text-align: center;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+    .brand-hover .models-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      justify-content: center;
+    }
+    .brand-hover .model-tag {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      padding: 0.2rem 0.6rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .brand-hover .models-count {
+      color: var(--brand-secondary);
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar"><div class="nav-container"><a href="index.html" class="nav-logo">HKG EXPORT</a><ul class="nav-links"><li><a href="why-hkg.html">Why HKG</a></li><li><a href="about.html">About</a></li><li><a href="countries.html">Countries</a></li><li><a href="brands.html" style="color:var(--brand-primary)">Brands</a></li><li><a href="vehicle-types.html">Vehicle Types</a></li><li><a href="import-guide.html">Import Guide</a></li><li><a href="knowledge.html">Knowledge</a></li><li><a href="resources.html">Resources</a></li><li><a href="contact.html">Contact</a></li></ul><div class="nav-actions"><button class="lang-switch" onclick="toggleLanguage()">العربية</button><a href="contact.html" class="btn-cta">Get a Quote</a><div class="mobile-toggle"><span></span><span></span><span></span></div></div></div></nav>
+
+  <section class="page-header">
+    <div class="page-header-content">
+      <h1 class="page-title" data-i18n="brands.title">Our Brand Partners</h1>
+      <p class="page-subtitle" data-i18n="brands.subtitle">Partnered with China's leading automotive manufacturers</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" id="brandSearch" placeholder="Search brands...">
+    </div>
+    <div class="brand-grid" id="brandGrid"></div>
+  </section>
+
+  <footer class="footer"><div class="footer-grid"><div><div class="footer-brand">HKG EXPORT</div><p class="footer-desc">Connecting Chinese automotive brands with global markets.</p><div class="footer-social"><a href="#">in</a><a href="#">tw</a><a href="#">fb</a></div></div><div class="footer-col"><h4>Quick Links</h4><ul><li><a href="why-hkg.html">Why HKG</a></li><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li></ul></div><div class="footer-col"><h4>Products</h4><ul><li><a href="countries.html">Countries</a></li><li><a href="brands.html">Brands</a></li><li><a href="vehicle-types.html">Vehicle Types</a></li></ul></div><div class="footer-col"><h4>Support</h4><ul><li><a href="resources.html">Resources</a></li><li><a href="knowledge.html">FAQ</a></li><li><a href="contact.html">Get a Quote</a></li></ul></div></div><div class="footer-bottom"><p>&copy; 2024 HKG Export. All rights reserved.</p><p>Hong Kong, China</p></div></footer>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    const brands = [
+      {name:"BYD",tagline:"Build Your Dreams",models:25,color:"#0066FF",desc:"World's largest NEV manufacturer, leading in battery technology.",keyModels:["Seal","Atto 3","Han","Tang","Dolphin"]},
+      {name:"Geely",tagline:"Quality Intelligence",models:18,color:"#1a1a1a",desc:"Major conglomerate owning Volvo, Polestar, and Lotus brands.",keyModels:["Coolray","Emgrand","Monjaro","Tugella"]},
+      {name:"Zeekr",tagline:"Premium Electric",models:6,color:"#6C5CE7",desc:"Geely's premium EV brand with cutting-edge SEA platform.",keyModels:["001","009","X","7X"]},
+      {name:"Chery",tagline:"Tech Makes the Difference",models:15,color:"#E63946",desc:"Top Chinese passenger car exporter with strong SUV lineup.",keyModels:["Tiggo 8","Tiggo 7","Omoda 5","Exeed LX"]},
+      {name:"Great Wall",tagline:"Chinese SUV Expert",models:12,color:"#2D3436",desc:"Leading SUV and pickup manufacturer with global reach.",keyModels:["Haval H6","Haval Jolion","Tank 300","Poer"]},
+      {name:"Changan",tagline:"Innovation for All",models:14,color:"#0984E3",desc:"One of China's 'Big Four' automakers with 160+ year history.",keyModels:["UNI-T","UNI-K","CS75","Deepal S7"]},
+      {name:"SAIC MG",tagline:"British Heritage, Chinese Tech",models:10,color:"#D63031",desc:"British brand reborn under SAIC, strong in EV segment.",keyModels:["MG4","MG ZS","MG5","HS"]},
+      {name:"NIO",tagline:"Blue Sky Coming",models:7,color:"#00B4D8",desc:"Premium smart EV pioneer with battery swap technology.",keyModels:["ET7","EL8","ET5","EC6"]},
+      {name:"XPeng",tagline:"Smart EV Pioneer",models:5,color:"#00CC88",desc:"Tech-focused EV maker with advanced autonomous driving.",keyModels:["G6","G9","P7","P5"]},
+      {name:"Li Auto",tagline:"Family Smart SUV",models:4,color:"#FF6B35",desc:"Extended-range EV specialist for family transportation.",keyModels:["L9","L8","L7","MEGA"]},
+      {name:"Haval",tagline:"SUV Specialist",models:8,color:"#636E72",desc:"Great Wall's dedicated SUV brand, best-selling in China.",keyModels:["H6","Jolion","H9","F7"]},
+      {name:"Wuling",tagline:"People's Car",models:6,color:"#FDCB6E",desc:"Ultra-affordable micro EVs and compact vehicles.",keyModels:["Mini EV","Bingo","Starlight","Zhengcheng"]},
+      {name:"JAC",tagline:"Quality Driving",models:9,color:"#74B9FF",desc:"State-owned enterprise with strong commercial vehicle presence.",keyModels:["T9","JS6","SUNRAY","FRIDAY"]},
+      {name:"BAIC",tagline:"Beijing Auto",models:7,color:"#A29BFE",desc:"Beijing-based automaker with Mercedes-Benz partnership.",keyModels:["BJ40","BJ60","X7","EU5"]},
+      {name:"GAC",tagline:"Guangzhou Auto",models:8,color:"#55EFC4",desc:"Southern China automaker with Toyota/Honda partnerships.",keyModels:["Aion S","Aion Y","GS8","M8"]},
+      {name:"FAW",tagline:"First Auto Works",models:6,color:"#FF7675",desc:"China's first automaker, partnering with VW and Toyota.",keyModels:["Bestune T90","Hongqi H5","Hongqi E-HS9"]},
+      {name:"Dongfeng",tagline:"Moving Forward",models:10,color:"#DFE6E9",desc:"Major state-owned enterprise with diverse product range.",keyModels:["Forthing T5","Aeolus","Voyah","DFSK"]},
+      {name:"Lynk & Co",tagline:"Connect the Dots",models:5,color:"#2D3436",desc:"Geely-Volvo joint venture with subscription-based model.",keyModels:["01","03","05","09"]},
+      {name:"Omoda",tagline:"Global Design",models:4,color:"#E17055",desc:"Chery's global brand targeting young urban drivers.",keyModels:["Omoda 5","Omoda 7","Jaecoo J6"]},
+      {name:"Tank",tagline:"Premium Off-Road",models:3,color:"#B2BEC3",desc:"Great Wall's premium off-road SUV brand.",keyModels:["Tank 300","Tank 400","Tank 500"]},
+      {name:"Exeed",tagline:"Beyond Excellence",models:4,color:"#6C5CE7",desc:"Chery's premium brand with advanced technology.",keyModels:["LX","TXL","VX","Yaoguang"]},
+      {name:"Jetour",tagline:"Travel Enjoyably",models:5,color:"#00B894",desc:"Chery sub-brand focused on travel and lifestyle SUVs.",keyModels:["X70","X90","Dashing","T2"]}
+    ];
+
+    const grid = document.getElementById('brandGrid');
+    brands.forEach(b => {
+      const modelTags = b.keyModels.map(m => `<span class="model-tag">${m}</span>`).join('');
+      grid.innerHTML += `
+        <div class="brand-card fade-up" data-name="${b.name.toLowerCase()}">
+          <div class="brand-front">
+            <div class="brand-logo" style="background:linear-gradient(135deg,${b.color}22,${b.color}11);color:${b.color};font-size:1.3rem;font-weight:800;">${b.name.substring(0,2)}</div>
+            <h3 class="brand-name">${b.name}</h3>
+            <p class="brand-tagline">${b.tagline}</p>
+            <p style="margin-top:0.75rem;font-size:0.85rem;color:#999">${b.models} models</p>
+          </div>
+          <div class="brand-hover">
+            <div class="brand-name-hover">${b.name}</div>
+            <div class="brand-desc-hover">${b.desc}</div>
+            <div class="models-list">${modelTags}</div>
+            <div class="models-count">${b.models} models available</div>
+          </div>
+        </div>`;
+    });
+
+    // Search
+    document.getElementById('brandSearch').addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      document.querySelectorAll('.brand-card').forEach(card => {
+        const name = card.dataset.name;
+        card.style.display = name.includes(query) ? '' : 'none';
+      });
+    });
+
+    applyLanguage(currentLang);
+  </script>
+</body>
+</html>

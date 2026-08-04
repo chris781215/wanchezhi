@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { mockPosts, mockComments } from '@/lib/mock-data';
+import { useAuth } from '@/lib/auth-context';
 import CommentTree from '@/components/CommentTree';
 import { formatRelativeTime } from '@/lib/utils';
 import Link from 'next/link';
@@ -56,8 +57,16 @@ const ChevronRightIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export default function PostDetailClient({ postId }: { postId: string }) {
-  const post = mockPosts.find((p) => p.id === postId);
+export default function PostDetailClient({ postId, initialPost }: { postId: string; initialPost?: any }) {
+  const { user } = useAuth();
+  // Use server-provided post if available, otherwise fall back to mockPosts
+  const rawPost = initialPost || mockPosts.find((p) => p.id === postId);
+  // Normalize dates (serialized as strings from server)
+  const post = rawPost ? {
+    ...rawPost,
+    createdAt: rawPost.createdAt instanceof Date ? rawPost.createdAt : new Date(rawPost.createdAt),
+    updatedAt: rawPost.updatedAt instanceof Date ? rawPost.updatedAt : new Date(rawPost.updatedAt),
+  } : null;
   const comments = mockComments.filter((c) => c.postId === postId);
   const router = useRouter();
 
@@ -69,15 +78,88 @@ export default function PostDetailClient({ postId }: { postId: string }) {
   const [submitting, setSubmitting] = useState(false);
   const [imgIndex, setImgIndex] = useState(0);
 
-  const handleVote = (value: number) => {
-    if (vote === value) {
-      setScore(score - (value > 0 ? 3 : -1));
-      setVote(0);
-    } else {
-      const diff = value > 0 ? 3 : -1;
-      const oldDiff = vote > 0 ? 3 : vote < 0 ? -1 : 0;
-      setScore(score - oldDiff + diff);
-      setVote(value);
+  // Load persisted comments from API
+  useEffect(() => {
+    fetch('/api/comments')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          const postComments = data.data
+            .filter((c: any) => c.postId === postId)
+            .map((c: any) => ({
+              ...c,
+              createdAt: new Date(c.createdAt),
+            }));
+          setCommentList(postComments);
+        }
+      })
+      .catch(() => {});
+  }, [postId]);
+
+  // Load persisted vote and bookmark state from API
+  useEffect(() => {
+    if (!user) return;
+    fetch(`/api/votes?targetId=${postId}&targetType=post&userId=${user.id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setVote(data.data.userVote || 0);
+          setScore(data.data.score || 0);
+        }
+      })
+      .catch(() => {});
+    fetch(`/api/bookmarks?postId=${postId}&userId=${user.id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setBookmarked(data.data.bookmarked || false);
+        }
+      })
+      .catch(() => {});
+  }, [postId, user]);
+
+  const handleVote = async (value: number) => {
+    if (!user) return;
+    const newValue = vote === value ? 0 : value;
+    // Optimistic update
+    const oldDiff = vote > 0 ? 3 : vote < 0 ? -1 : 0;
+    const newDiff = newValue > 0 ? 3 : newValue < 0 ? -1 : 0;
+    setScore(score - oldDiff + newDiff);
+    setVote(newValue);
+    try {
+      const res = await fetch('/api/votes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, targetId: postId, targetType: 'post', value: newValue }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setScore(data.data.score);
+        setVote(data.data.userVote);
+      }
+    } catch {
+      // revert on error
+      setScore(score + oldDiff - newDiff);
+      setVote(vote);
+    }
+  };
+
+  const handleBookmark = async () => {
+    if (!user) return;
+    const newBookmarked = !bookmarked;
+    setBookmarked(newBookmarked);
+    try {
+      const res = await fetch('/api/bookmarks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, postId: postId, action: newBookmarked ? 'add' : 'remove' }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setBookmarked(data.data.bookmarked);
+      }
+    } catch {
+      setBookmarked(bookmarked);
     }
   };
 
@@ -102,7 +184,7 @@ export default function PostDetailClient({ postId }: { postId: string }) {
       const res = await fetch('/api/comments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: commentText, postId: postId }),
+        body: JSON.stringify({ content: commentText, postId: postId, authorId: user?.id, author: user ? { id: user.id, nickname: user.nickname, avatar: user.avatar, points: user.points } : undefined }),
       });
       const data = await res.json();
       if (data.success) {
@@ -240,7 +322,7 @@ export default function PostDetailClient({ postId }: { postId: string }) {
                 {/* Dots */}
                 {imgs.length > 1 && (
                   <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
-                    {imgs.map((_, idx) => (
+                    {imgs.map((_img: string, idx: number) => (
                       <button
                         key={idx}
                         onClick={() => setImgIndex(idx)}
@@ -292,7 +374,7 @@ export default function PostDetailClient({ postId }: { postId: string }) {
             </span>
 
             <button
-              onClick={() => setBookmarked(!bookmarked)}
+              onClick={handleBookmark}
               className={`flex items-center gap-1 hover:text-foreground ${bookmarked ? 'text-primary' : ''}`}
             >
               <BookmarkIcon className="w-4 h-4" fill={bookmarked ? 'currentColor' : 'none'} />
@@ -330,7 +412,7 @@ export default function PostDetailClient({ postId }: { postId: string }) {
       {/* Comments */}
       <div id="comments" className="bg-white border border-border rounded-lg p-4">
         <h2 className="font-semibold mb-4">评论 ({commentList.length})</h2>
-        <CommentTree comments={commentList} />
+        <CommentTree comments={commentList} onCommentAdded={(newComment) => setCommentList((prev) => [...prev, newComment])} />
       </div>
     </div>
   );

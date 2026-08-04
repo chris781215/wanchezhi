@@ -31,7 +31,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const token = localStorage.getItem('wcz_token');
       const userData = localStorage.getItem('wcz_user');
       if (token && userData) {
-        setUser(JSON.parse(userData));
+        const parsed = JSON.parse(userData);
+        setUser(parsed);
+        // Refresh user data from API to get latest points
+        fetch(`/api/users/${parsed.username}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success && data.data) {
+              const freshUser = { ...parsed, points: data.data.points, nickname: data.data.nickname || parsed.nickname, avatar: data.data.avatar || parsed.avatar };
+              setUser(freshUser);
+              localStorage.setItem('wcz_user', JSON.stringify(freshUser));
+            }
+          })
+          .catch(() => {});
       }
     } catch {
       localStorage.removeItem('wcz_token');

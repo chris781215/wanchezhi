@@ -23,8 +23,8 @@ export default function NewMembers() {
 
   return (
     <div className="bg-white border border-border rounded-lg overflow-hidden">
-      <div className="px-4 py-2.5 bg-gradient-to-r from-sky-500 to-blue-600 text-white">
-        <h3 className="font-semibold text-sm">👋 新会员</h3>
+      <div className="px-4 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white">
+        <h3 className="font-semibold text-sm">👋 新手会员</h3>
       </div>
       <div className="divide-y divide-border">
         {newMembers.map((user) => (

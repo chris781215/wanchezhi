@@ -1,10 +1,13 @@
-import { mockCommunities, mockPosts } from '@/lib/mock-data';
+import { mockCommunities, mockPosts, mockUsers } from '@/lib/mock-data';
 import { loadDynamicCommunities, saveCommunity } from '@/lib/community-store';
+import { loadDynamicPosts } from '@/lib/post-store';
+import { loadDynamicUsers } from '@/lib/user-store';
 import BrandLogo from '@/components/BrandLogo';
 import CommunityTabs from '@/components/CommunityTabs';
 import SeniorUsers from '@/components/SeniorUsers';
 import NewMembers from '@/components/NewMembers';
 import Sidebar from '@/components/Sidebar';
+import CommunityEditButton from '@/components/CommunityEditButton';
 import { formatNumber } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -37,6 +40,12 @@ const UsersIcon = ({ className }: { className?: string }) => (
 const FileTextIcon = ({ className }: { className?: string }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+  </svg>
+);
+
+const CrownIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+    <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z" />
   </svg>
 );
 
@@ -74,8 +83,22 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
     community = newComm;
   }
 
-  const communityPosts = mockPosts.filter((p) => p.communityId === community!.id && p.type !== 'TRADE');
-  const tradePosts = mockPosts.filter((p) => p.communityId === community!.id && p.type === 'TRADE');
+  // Load dynamic posts from file store
+  const dynamicPosts = loadDynamicPosts();
+  const allPosts = [...mockPosts];
+  dynamicPosts.forEach((dp: any) => {
+    if (!allPosts.find((p) => p.id === dp.id)) {
+      dp.createdAt = new Date(dp.createdAt);
+      dp.updatedAt = new Date(dp.updatedAt);
+      allPosts.push(dp);
+    }
+  });
+
+  const communityPosts = allPosts.filter((p) => p.communityId === community!.id && p.type !== 'TRADE');
+  const tradePosts = allPosts.filter((p) => p.communityId === community!.id && p.type === 'TRADE');
+
+  // Find the community owner (吧主)
+  const owner = mockUsers.find((u) => u.id === community!.createdById);
 
   return (
     <div className="max-w-7xl mx-auto px-3 md:px-4 py-4">
@@ -102,6 +125,12 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
                   )}
                 </div>
                 <div className="flex gap-2 shrink-0 ml-3">
+                  <CommunityEditButton
+                    communitySlug={community!.slug}
+                    communityDisplayName={community!.displayName}
+                    communityDescription={community!.description || ''}
+                    createdById={community!.createdById}
+                  />
                   <button className="px-4 py-1.5 bg-primary text-white rounded-full text-sm font-medium hover:bg-primary-hover transition-colors">
                     加入
                   </button>
@@ -129,6 +158,15 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
               <span className="font-bold">{formatNumber(community!.postCount)}</span>
               <span className="text-text-secondary">帖子</span>
             </div>
+            {owner && (
+              <div className="flex items-center gap-1.5">
+                <CrownIcon className="w-3.5 h-3.5 text-amber-500" />
+                <Link href={`/u/${owner.username}`} className="font-medium text-amber-600 hover:underline">
+                  {owner.nickname}
+                </Link>
+                <span className="text-text-secondary">版主</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -162,6 +200,17 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
                 <span className="text-text-secondary">创建于</span>
                 <span className="font-medium">{new Date(community!.createdAt).toLocaleDateString()}</span>
               </div>
+              {owner && (
+                <div className="flex justify-between text-sm items-center">
+                  <span className="text-text-secondary">版主</span>
+                  <div className="flex items-center gap-1">
+                    <CrownIcon className="w-3 h-3 text-amber-500" />
+                    <Link href={`/u/${owner.username}`} className="font-medium text-amber-600 hover:underline">
+                      {owner.nickname}
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

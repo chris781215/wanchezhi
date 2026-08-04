@@ -1,0 +1,32 @@
+[
+  {
+    "id": "comment-1785825364333",
+    "content": "赞",
+    "postId": "post-1785825321120",
+    "parentId": "comment-1785825356859",
+    "authorId": "user-1784590936120",
+    "voteScore": 0,
+    "createdAt": "2026-08-04T06:36:04.333Z",
+    "author": {
+      "id": "user-1784590936120",
+      "nickname": "chris",
+      "avatar": "/avatars/default.png",
+      "points": 0
+    }
+  },
+  {
+    "id": "comment-1785825356859",
+    "content": "赞\n",
+    "postId": "post-1785825321120",
+    "parentId": null,
+    "authorId": "user-1784590936120",
+    "voteScore": 0,
+    "createdAt": "2026-08-04T06:35:56.859Z",
+    "author": {
+      "id": "user-1784590936120",
+      "nickname": "chris",
+      "avatar": "/avatars/default.png",
+      "points": 0
+    }
+  }
+]

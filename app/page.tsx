@@ -4,13 +4,37 @@ import SortTabs from '@/components/SortTabs';
 import TrendingCommunities from '@/components/TrendingCommunities';
 import HeroCarousel from '@/components/ImageCarousel';
 import { mockPosts } from '@/lib/mock-data';
+import { loadDynamicPosts } from '@/lib/post-store';
 import { calculateHotScore } from '@/lib/utils';
+import { loadVotes } from '@/lib/vote-store';
+
+function getAllPosts() {
+  const dynamicPosts = loadDynamicPosts();
+  const allPosts = [...mockPosts];
+  dynamicPosts.forEach((dp: any) => {
+    if (!allPosts.find((p) => p.id === dp.id)) {
+      dp.createdAt = new Date(dp.createdAt);
+      dp.updatedAt = new Date(dp.updatedAt);
+      allPosts.unshift(dp);
+    }
+  });
+
+  // Compute actual vote scores from vote-store
+  const votes = loadVotes();
+  allPosts.forEach((post) => {
+    const postVotes = votes.filter((v) => v.targetId === post.id && v.targetType === 'post');
+    post.voteScore = postVotes.reduce((sum, v) => sum + v.value, 0);
+  });
+
+  return allPosts;
+}
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ sort?: string }> }) {
   const { sort } = await searchParams;
   const sortType = sort || 'hot';
+  const allPosts = getAllPosts();
 
-  const sortedPosts = [...mockPosts].sort((a, b) => {
+  const sortedPosts = [...allPosts].sort((a, b) => {
     switch (sortType) {
       case 'new':
         return b.createdAt.getTime() - a.createdAt.getTime();

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
-import { mockPosts, mockUsers } from '@/lib/mock-data';
+import { presetCarModels } from '@/lib/mock-data';
 import { useRouter, usePathname } from 'next/navigation';
 import Avatar from '@/components/Avatar';
 import BrandLogo from '@/components/BrandLogo';
@@ -68,14 +68,28 @@ export default function Navbar() {
   const [draftCount, setDraftCount] = useState(0);
   const [notifCount, setNotifCount] = useState(0);
   const [allCommunities, setAllCommunities] = useState<any[]>([]);
+  const [allPosts, setAllPosts] = useState<any[]>([]);
+  const [allUsers, setAllUsers] = useState<any[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  // Fetch communities from API (includes dynamic ones)
+  // Fetch communities, posts, users from API
   useEffect(() => {
     fetch('/api/communities')
       .then((res) => res.json())
       .then((data) => {
         if (data.success) setAllCommunities(data.data.items);
+      })
+      .catch(() => {});
+    fetch('/api/posts')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) setAllPosts(data.data);
+      })
+      .catch(() => {});
+    fetch('/api/users')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) setAllUsers(data.data.items);
       })
       .catch(() => {});
   }, []);
@@ -112,20 +126,31 @@ export default function Navbar() {
       ).slice(0, 5)
     : [];
   const filteredPosts = searchQuery.trim()
-    ? mockPosts.filter(
-        (p) =>
+    ? allPosts.filter(
+        (p: any) =>
           p.title.toLowerCase().includes(q) ||
           (p.content || '').toLowerCase().includes(q)
       ).slice(0, 3)
     : [];
   const filteredUsers = searchQuery.trim()
-    ? mockUsers.filter(
-        (u) =>
+    ? allUsers.filter(
+        (u: any) =>
           u.nickname.toLowerCase().includes(q) ||
           u.email.toLowerCase().includes(q)
       ).slice(0, 3)
     : [];
-  const hasResults = filteredCommunities.length > 0 || filteredPosts.length > 0 || filteredUsers.length > 0;
+  // Filter preset car models as additional suggestions
+  const filteredPresets = searchQuery.trim()
+    ? presetCarModels.filter(
+        (m) =>
+          !allCommunities.some((c) => c.slug === m.slug) &&
+          (m.slug.toLowerCase().includes(q) ||
+            m.code.toLowerCase().includes(q) ||
+            m.displayName.toLowerCase().includes(q) ||
+            m.brand.toLowerCase().includes(q))
+      ).slice(0, 5)
+    : [];
+  const hasResults = filteredCommunities.length > 0 || filteredPosts.length > 0 || filteredUsers.length > 0 || filteredPresets.length > 0;
 
   const showDropdown = searchFocused && searchQuery.trim().length > 0;
 
@@ -224,6 +249,25 @@ export default function Navbar() {
                               <p className="text-xs text-text-secondary">{u.points} 积分</p>
                             </div>
                           </button>
+                        ))}
+                      </div>
+                    )}
+                    {filteredPresets.length > 0 && (
+                      <div>
+                        <p className="px-4 py-1.5 text-[10px] font-bold text-text-secondary uppercase tracking-wider bg-secondary">创建车型社区</p>
+                        {filteredPresets.map((m) => (
+                          <Link
+                            key={m.slug}
+                            href={`/communities/create?preset=${m.slug}`}
+                            onClick={() => { setSearchQuery(''); setSearchFocused(false); setSearchOpen(false); }}
+                            className="w-full text-left px-4 py-2.5 hover:bg-secondary flex items-center gap-3 border-b border-border last:border-0"
+                          >
+                            <BrandLogo brand={m.brand} size="sm" />
+                            <div>
+                              <p className="text-sm font-medium">w/{m.displayName}</p>
+                              <p className="text-xs text-text-secondary">点击创建该社区</p>
+                            </div>
+                          </Link>
                         ))}
                       </div>
                     )}
@@ -534,7 +578,7 @@ export default function Navbar() {
             <div className="px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white">
               <h3 className="font-semibold text-xs">🏆 资深用户</h3>
             </div>
-            {[...mockUsers]
+            {[...allUsers]
               .sort((a, b) => b.points - a.points)
               .slice(0, 5)
               .map((u, idx) => {

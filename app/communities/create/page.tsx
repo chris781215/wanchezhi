@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { presetCarModels, mockCommunities } from '@/lib/mock-data';
+import { useAuth } from '@/lib/auth-context';
 import BrandLogo from '@/components/BrandLogo';
 
 const SearchIcon = ({ className }: { className?: string }) => (
@@ -13,22 +14,59 @@ const SearchIcon = ({ className }: { className?: string }) => (
 
 export default function CreateCommunityPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [code, setCode] = useState('');
   const [brand, setBrand] = useState('');
   const [description, setDescription] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [allCommunities, setAllCommunities] = useState<any[]>([]);
+
+  // Fetch communities from API (includes dynamic communities)
+  useEffect(() => {
+    fetch('/api/communities')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) setAllCommunities(data.data.items);
+      })
+      .catch(() => {});
+  }, []);
+
+  // Auto-fill from preset URL param (e.g. /communities/create?preset=w221)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const presetSlug = params.get('preset');
+    if (presetSlug) {
+      const preset = presetCarModels.find((m) => m.slug === presetSlug);
+      if (preset) {
+        setCode(preset.slug);
+        setBrand(preset.brand);
+        setDescription(preset.displayName);
+      }
+    }
+  }, []);
+
+  // Use fetched communities (includes dynamic) or fallback to mock
+  const communityList = allCommunities.length > 0 ? allCommunities : mockCommunities;
 
   // Filter presets by code
   const filteredPresets = code.trim()
     ? presetCarModels.filter(
         (m) =>
-          !mockCommunities.some((c) => c.slug === m.slug) &&
+          !communityList.some((c) => c.slug === m.slug) &&
           (m.slug.toLowerCase().includes(code.toLowerCase()) ||
             m.code.toLowerCase().includes(code.toLowerCase()) ||
             m.displayName.toLowerCase().includes(code.toLowerCase()) ||
             m.brand.toLowerCase().includes(code.toLowerCase()))
       )
+    : [];
+
+  // Extract unique brands from presets
+  const allBrands = Array.from(new Set(presetCarModels.map((m) => m.brand))).sort();
+
+  // Filter brands by input
+  const filteredBrands = brand.trim()
+    ? allBrands.filter((b) => b.toLowerCase().includes(brand.toLowerCase()))
     : [];
 
   // Auto-fill brand from preset
@@ -38,9 +76,14 @@ export default function CreateCommunityPage() {
     setDescription(preset.displayName);
   };
 
+  // Select brand from autocomplete
+  const handleSelectBrand = (b: string) => {
+    setBrand(b);
+  };
+
   // Check if community already exists
   const slug = code.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
-  const exists = mockCommunities.some((c) => c.slug === slug);
+  const exists = communityList.some((c) => c.slug === slug);
 
   return (
     <div className="max-w-2xl mx-auto px-3 md:px-4 py-6">
@@ -89,15 +132,30 @@ export default function CreateCommunityPage() {
       )}
 
       {/* Brand */}
-      <div className="mb-4">
+      <div className="mb-4 relative">
         <label className="block text-sm font-medium mb-2">品牌</label>
         <input
           type="text"
-          placeholder="如：奔驰、宝马、丰田..."
+          placeholder="输入品牌名称，如：奔驰、宝马、丰田..."
           value={brand}
           onChange={(e) => setBrand(e.target.value)}
+          onFocus={() => {}}
           className="w-full px-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-primary"
         />
+        {filteredBrands.length > 0 && brand.trim() && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto z-10">
+            {filteredBrands.map((b) => (
+              <button
+                key={b}
+                onClick={() => handleSelectBrand(b)}
+                className="w-full text-left px-4 py-2 text-sm hover:bg-secondary border-b border-border last:border-0 flex items-center gap-2"
+              >
+                <BrandLogo brand={b} size="sm" />
+                <span>{b}</span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Description */}
@@ -136,6 +194,7 @@ export default function CreateCommunityPage() {
                   code: code.trim().toUpperCase(),
                   displayName: code.trim().toUpperCase(),
                   description: description || undefined,
+                  createdById: user?.id || 'user1',
                 }),
               });
               const data = await res.json();

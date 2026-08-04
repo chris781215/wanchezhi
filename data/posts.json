@@ -1,0 +1,41 @@
+[
+  {
+    "id": "post-1785825321120",
+    "title": "绝了",
+    "content": "绝了",
+    "type": "IMAGE",
+    "url": null,
+    "images": [
+      "/uploads/1785825321093-00iypc.jpeg"
+    ],
+    "price": null,
+    "communityId": "comm-1785825298463",
+    "authorId": "user-1784590936120",
+    "voteScore": 0,
+    "bookmarkCount": 0,
+    "commentCount": 2,
+    "createdAt": "2026-08-04T06:35:21.120Z",
+    "updatedAt": "2026-08-04T06:35:21.120Z",
+    "community": {
+      "id": "comm-1785825298463",
+      "slug": "w221",
+      "brand": "奔驰",
+      "code": "W221",
+      "displayName": "W221",
+      "description": "奔驰 W221 (S级 2005-2013) 奔驰鹰眼奔",
+      "postCount": 0,
+      "memberCount": 1,
+      "createdAt": "2026-08-04T06:34:58.463Z",
+      "createdById": "user-1784590936120"
+    },
+    "author": {
+      "id": "user-1784590936120",
+      "nickname": "chris",
+      "avatar": "/avatars/default.png",
+      "points": 0,
+      "username": "chris",
+      "email": "chris@163.com",
+      "createdAt": "2026-08-04T06:35:21.103Z"
+    }
+  }
+]

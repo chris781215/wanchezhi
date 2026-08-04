@@ -1,12 +1,28 @@
 import { mockPosts } from '@/lib/mock-data';
+import { loadDynamicPosts } from '@/lib/post-store';
 import PostDetailClient from '@/components/PostDetailClient';
 import Sidebar from '@/components/Sidebar';
 import TrendingCommunities from '@/components/TrendingCommunities';
 import type { Metadata } from 'next';
 
+// Merge dynamic posts from file into mockPosts for server-side lookups
+function getAllPosts() {
+  const dynamicPosts = loadDynamicPosts();
+  const allPosts = [...mockPosts];
+  dynamicPosts.forEach((dp: any) => {
+    if (!allPosts.find((p) => p.id === dp.id)) {
+      dp.createdAt = new Date(dp.createdAt);
+      dp.updatedAt = new Date(dp.updatedAt);
+      allPosts.unshift(dp);
+    }
+  });
+  return allPosts;
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const post = mockPosts.find((p) => p.id === id);
+  const allPosts = getAllPosts();
+  const post = allPosts.find((p) => p.id === id);
 
   if (!post) {
     return { title: '帖子不存在 - 玩车志' };
@@ -38,6 +54,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const allPosts = getAllPosts();
+  const post = allPosts.find((p) => p.id === id);
+
   return (
     <div className="max-w-7xl mx-auto px-3 md:px-4 py-4">
       <div className="flex gap-6">
@@ -46,7 +65,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
 
         {/* Main content */}
         <div className="flex-1 min-w-0">
-          <PostDetailClient postId={id} />
+          <PostDetailClient postId={id} initialPost={post || null} />
         </div>
 
         {/* Right sidebar - Desktop only */}

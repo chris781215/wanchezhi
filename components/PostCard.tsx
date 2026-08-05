@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Post } from '@/types';
-import { formatRelativeTime, truncateText } from '@/lib/utils';
+import { formatRelativeTime } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import BrandLogo from '@/components/BrandLogo';
 import Avatar from '@/components/Avatar';
@@ -186,45 +186,61 @@ export default function PostCard({ post, rank }: PostCardProps) {
             <span>{formatRelativeTime(post.createdAt)}</span>
           </div>
 
-          {/* Title */}
-          <h3 className="text-xl font-semibold mb-2 line-clamp-2">
-            {post.type === 'TRADE' && (
-              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold mr-1.5 align-middle bg-orange-100 text-orange-700 border border-orange-200">
+          {/* Trade tag + Price */}
+          {post.type === 'TRADE' && (
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-orange-700 border border-orange-200">
                 <TagIcon className="w-3 h-3" />
                 交易
               </span>
-            )}
-            {post.title}
-          </h3>
-
-          {/* Price tag for trade posts */}
-          {post.type === 'TRADE' && post.price && (
-            <div className="flex items-center gap-1 mb-3">
-              <span className="text-lg font-bold text-orange-600">
-                ¥{Number(post.price).toLocaleString()}
-              </span>
+              {post.price && (
+                <span className="text-lg font-bold text-orange-600">
+                  ¥{Number(post.price).toLocaleString()}
+                </span>
+              )}
             </div>
           )}
 
-          {/* Content preview */}
+          {/* Content text */}
           {post.content && (
-            <p className="text-sm text-text-secondary mb-3 line-clamp-3">
-              {truncateText(post.content.replace(/[#*`\[\]]/g, ''), 200)}
+            <p className="text-base text-foreground mb-3 whitespace-pre-wrap leading-relaxed">
+              {post.content.replace(/[#*`\[\]]/g, '')}
             </p>
           )}
 
-          {/* Image thumbnails */}
+          {/* Images */}
           {hasImages && (
-            <div className="flex gap-1.5 mb-3 justify-center">
-              {post.images!.slice(0, 3).map((img, idx) => (
-                <div key={idx} className="rounded-md overflow-hidden bg-secondary shrink-0">
-                  <img src={img} alt="" className="h-20 w-auto object-contain" />
+            <div className={`mb-3 justify-center ${post.images!.length === 1 ? 'flex' : 'flex flex-wrap gap-1.5'}`}>
+              {post.images!.length === 1 ? (
+                /* Single image: show large, vertical images stretch tall */
+                <div className="rounded-lg overflow-hidden bg-secondary max-w-full">
+                  <img
+                    src={post.images![0]}
+                    alt=""
+                    className="max-w-full h-auto max-h-[500px] object-contain"
+                    onLoad={(e) => {
+                      const img = e.currentTarget;
+                      const ratio = img.naturalHeight / img.naturalWidth;
+                      if (ratio > 1.3) {
+                        img.className = 'w-full max-h-[600px] object-contain';
+                      }
+                    }}
+                  />
                 </div>
-              ))}
-              {post.images!.length > 3 && (
-                <div className="h-20 px-3 rounded-md bg-black/50 flex items-center justify-center text-white text-xs font-bold shrink-0">
-                  +{post.images!.length - 3}
-                </div>
+              ) : (
+                /* Multiple images: grid layout */
+                <>
+                  {post.images!.slice(0, 4).map((img, idx) => (
+                    <div key={idx} className="rounded-md overflow-hidden bg-secondary shrink-0" style={{ width: post.images!.length === 2 ? '48%' : '32%' }}>
+                      <img src={img} alt="" className="w-full h-28 object-cover" />
+                    </div>
+                  ))}
+                  {post.images!.length > 4 && (
+                    <div className="h-28 w-1/4 rounded-md bg-black/50 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                      +{post.images!.length - 4}
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}

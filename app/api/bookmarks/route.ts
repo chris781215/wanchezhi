@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import { addBookmark, removeBookmark, isBookmarked, getBookmarkCount } from '@/lib/bookmark-store';
+import { addPoints } from '@/lib/user-store';
+import { mockPosts } from '@/lib/mock-data';
+import { loadDynamicPosts } from '@/lib/post-store';
 
 export async function POST(request: Request) {
   try {
@@ -11,8 +14,26 @@ export async function POST(request: Request) {
     // action: 'add' or 'remove'
     if (action === 'remove') {
       removeBookmark(userId, postId);
+      // Revert bookmark points for post author (-2)
+      const dynamicPosts = loadDynamicPosts();
+      dynamicPosts.forEach((dp: any) => {
+        if (!mockPosts.find((p: any) => p.id === dp.id)) mockPosts.push(dp);
+      });
+      const post = mockPosts.find((p: any) => p.id === postId);
+      if (post?.authorId) {
+        addPoints(post.authorId, -2);
+      }
     } else {
       addBookmark(userId, postId);
+      // Award bookmark points for post author (+2)
+      const dynamicPosts = loadDynamicPosts();
+      dynamicPosts.forEach((dp: any) => {
+        if (!mockPosts.find((p: any) => p.id === dp.id)) mockPosts.push(dp);
+      });
+      const post = mockPosts.find((p: any) => p.id === postId);
+      if (post?.authorId) {
+        addPoints(post.authorId, 2);
+      }
     }
 
     const bookmarked = isBookmarked(userId, postId);

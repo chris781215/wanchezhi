@@ -1,47 +1,47 @@
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import fs from 'fs';
+import path from 'path';
 
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
-    const files = formData.getAll('images') as File[];
+    const file = formData.get('file') as File;
 
-    if (!files || files.length === 0) {
-      return NextResponse.json({ success: false, error: '没有上传图片' }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ success: false, error: '没有文件' }, { status: 400 });
     }
 
-    if (files.length > 9) {
-      return NextResponse.json({ success: false, error: '最多上传 9 张图片' }, { status: 400 });
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      return NextResponse.json({ success: false, error: '仅支持 JPG、PNG、WebP、GIF 格式' }, { status: 400 });
     }
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json({ success: false, error: '文件大小不能超过 5MB' }, { status: 400 });
+    }
+
+    // Generate filename
+    const ext = file.name.split('.').pop() || 'jpg';
+    const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
 
     // Ensure upload directory exists
-    const uploadDir = join(process.cwd(), 'public', 'uploads');
-    await mkdir(uploadDir, { recursive: true });
-
-    const urls: string[] = [];
-
-    for (const file of files) {
-      if (!file.type.startsWith('image/')) {
-        continue;
-      }
-
-      // Generate unique filename
-      const ext = file.name.split('.').pop() || 'jpg';
-      const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-      const filepath = join(uploadDir, filename);
-
-      // Read and write file
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      await writeFile(filepath, buffer);
-
-      urls.push(`/uploads/${filename}`);
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
     }
 
-    return NextResponse.json({ success: true, data: { urls } });
-  } catch (error) {
-    console.error('Upload error:', error);
+    // Save file
+    const filePath = path.join(uploadDir, filename);
+    const buffer = Buffer.from(await file.arrayBuffer());
+    fs.writeFileSync(filePath, buffer);
+
+    const url = `/uploads/${filename}`;
+
+    return NextResponse.json({ success: true, data: { url, filename } });
+  } catch (err) {
+    console.error('Upload error:', err);
     return NextResponse.json({ success: false, error: '上传失败' }, { status: 500 });
   }
 }

@@ -155,9 +155,10 @@ function getWidthClass(name: string, size: 'sm' | 'md' | 'lg' | 'xl'): string {
 interface BrandLogoProps {
   brand: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  image?: string; // Custom logo image URL
 }
 
-export default function BrandLogo({ brand, size = 'md' }: BrandLogoProps) {
+export default function BrandLogo({ brand, size = 'md', image }: BrandLogoProps) {
   const englishName = brandEnglishNames[brand] || brand;
   const gradient = brandBg[brand];
 
@@ -171,6 +172,17 @@ export default function BrandLogo({ brand, size = 'md' }: BrandLogoProps) {
   const bgClass = gradient || fallbackGradients[getBrandHash(brand) % fallbackGradients.length];
   const fontSize = getFontSize(englishName, size);
   const widthClass = getWidthClass(englishName, size);
+
+  // If custom image is provided, show it
+  if (image) {
+    return (
+      <span
+        className={`${widthClass} ${heightClasses[size]} rounded-full inline-flex items-center justify-center shrink-0 overflow-hidden bg-secondary`}
+      >
+        <img src={image} alt={brand} className="w-full h-full object-cover" />
+      </span>
+    );
+  }
 
   return (
     <span

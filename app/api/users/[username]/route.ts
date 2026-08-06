@@ -43,7 +43,7 @@ export async function PATCH(_request: Request, { params }: { params: Promise<{ u
 
   try {
     const body = await _request.json();
-    const allowedFields = ['nickname', 'bio', 'currentCar', 'carHistory', 'expertise', 'interests'] as const;
+    const allowedFields = ['nickname', 'bio', 'avatar', 'currentCar', 'carHistory', 'expertise', 'interests'] as const;
 
     for (const field of allowedFields) {
       if (body[field] !== undefined) {

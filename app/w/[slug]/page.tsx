@@ -114,7 +114,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
         <div className="px-4 pb-4 -mt-10">
           <div className="flex items-end gap-4">
             <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-xl border-4 border-white shadow-md flex items-center justify-center shrink-0">
-              <BrandLogo brand={community!.brand} size="md" />
+              <BrandLogo brand={community!.brand} size="md" image={(community as any).logo} />
             </div>
             <div className="flex-1 pt-12">
               <div className="flex items-center justify-between">
@@ -130,6 +130,8 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
                     communityDisplayName={community!.displayName}
                     communityDescription={community!.description || ''}
                     createdById={community!.createdById}
+                    communityLogo={(community as any).logo}
+                    communityBrand={community!.brand}
                   />
                   <button className="px-4 py-1.5 bg-primary text-white rounded-full text-sm font-medium hover:bg-primary-hover transition-colors">
                     加入

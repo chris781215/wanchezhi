@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
+import BrandLogo from '@/components/BrandLogo';
 
 const EditIcon = ({ className }: { className?: string }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -21,6 +22,8 @@ interface CommunityEditButtonProps {
   communityDisplayName: string;
   communityDescription: string;
   createdById: string;
+  communityLogo?: string;
+  communityBrand?: string;
 }
 
 export default function CommunityEditButton({
@@ -28,17 +31,46 @@ export default function CommunityEditButton({
   communityDisplayName,
   communityDescription,
   createdById,
+  communityLogo,
+  communityBrand,
 }: CommunityEditButtonProps) {
   const router = useRouter();
   const { user } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [displayName, setDisplayName] = useState(communityDisplayName);
   const [description, setDescription] = useState(communityDescription);
+  const [logo, setLogo] = useState(communityLogo || '');
+  const [logoPreview, setLogoPreview] = useState(communityLogo || '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Only the community creator or admin can edit
   if (!user || (user.id !== createdById && !user.isAdmin)) return null;
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setError('');
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'logo');
+      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.success) {
+        setLogo(data.data.url);
+        setLogoPreview(data.data.url);
+      } else {
+        setError(data.error || '上传失败');
+      }
+    } catch {
+      setError('网络错误');
+    }
+    setUploading(false);
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -50,6 +82,7 @@ export default function CommunityEditButton({
         body: JSON.stringify({
           displayName,
           description,
+          logo,
           createdById,
         }),
       });
@@ -90,6 +123,45 @@ export default function CommunityEditButton({
 
             {/* Body */}
             <div className="px-5 py-4 space-y-4">
+              {/* Logo upload */}
+              <div>
+                <label className="block text-sm font-medium mb-1.5">社区 Logo</label>
+                <div className="flex items-center gap-3">
+                  {logoPreview ? (
+                    <BrandLogo brand={communityBrand || displayName} size="md" image={logoPreview} />
+                  ) : (
+                    <BrandLogo brand={communityBrand || displayName} size="md" />
+                  )}
+                  <div className="flex-1">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                      onChange={handleLogoUpload}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                      className="px-3 py-1.5 border border-border rounded-lg text-xs hover:bg-secondary transition-colors"
+                    >
+                      {uploading ? '上传中...' : logo ? '更换 Logo' : '上传 Logo'}
+                    </button>
+                    {logo && (
+                      <button
+                        type="button"
+                        onClick={() => { setLogo(''); setLogoPreview(''); }}
+                        className="ml-2 text-xs text-red-500 hover:underline"
+                      >
+                        移除
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <p className="text-[10px] text-text-secondary mt-1">支持 JPG、PNG、WebP、GIF，最大 5MB</p>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium mb-1.5">社区名称</label>
                 <input

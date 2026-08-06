@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import Avatar from '@/components/Avatar';
 import FollowButton from '@/components/FollowButton';
@@ -22,13 +22,14 @@ interface ProfileHeaderProps {
   userId: string;
   username: string;
   nickname: string;
+  avatar?: string;
   points: number;
   postCount: number;
   posts: Post[];
   comments: Comment[];
 }
 
-export default function ProfileHeader({ userId, username, nickname: initialNickname, points, postCount, posts, comments }: ProfileHeaderProps) {
+export default function ProfileHeader({ userId, username, nickname: initialNickname, avatar: initialAvatar, points, postCount, posts, comments }: ProfileHeaderProps) {
   const { user } = useAuth();
   const isOwner = user?.username === username;
 
@@ -36,6 +37,9 @@ export default function ProfileHeader({ userId, username, nickname: initialNickn
   const [editingBio, setEditingBio] = useState(false);
   const [bioValue, setBioValue] = useState('');
   const [saving, setSaving] = useState(false);
+  const [avatar, setAvatar] = useState(initialAvatar || '');
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch bio from API
   useEffect(() => {
@@ -68,13 +72,55 @@ export default function ProfileHeader({ userId, username, nickname: initialNickn
     setEditingBio(false);
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAvatar(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'avatar');
+      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.success) {
+        setAvatar(data.data.url);
+        // Save to user profile
+        await fetch(`/api/users/${encodeURIComponent(username)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ avatar: data.data.url }),
+        });
+      }
+    } catch {}
+    setUploadingAvatar(false);
+  };
+
   return (
     <div className="bg-white border border-border rounded-lg overflow-hidden mb-6">
       <div className="h-24 bg-gradient-to-r from-primary to-blue-400" />
       <div className="px-4 pb-4 -mt-10">
         <div className="flex items-end gap-4">
-          <div className="border-4 border-white rounded-full shadow">
-            <Avatar nickname={initialNickname} points={points} size="lg" />
+          <div className="border-4 border-white rounded-full shadow relative group">
+            <Avatar nickname={initialNickname} points={points} size="lg" image={avatar} />
+            {isOwner && (
+              <>
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                  onChange={handleAvatarUpload}
+                  className="hidden"
+                />
+                <button
+                  onClick={() => avatarInputRef.current?.click()}
+                  disabled={uploadingAvatar}
+                  className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-medium"
+                  title="更换头像"
+                >
+                  {uploadingAvatar ? '上传中...' : '📷'}
+                </button>
+              </>
+            )}
           </div>
           <div className="flex-1 pt-12">
             <div className="flex items-center justify-between">

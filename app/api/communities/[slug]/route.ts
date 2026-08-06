@@ -49,7 +49,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ slug
   }
 
   const body = await request.json();
-  const { description, displayName, createdById } = body;
+  const { description, displayName, logo, createdById } = body;
 
   // Check if the requester is the community creator or admin
   ensureDynamicUsersLoaded();
@@ -62,6 +62,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ slug
   // Update fields
   if (description !== undefined) community.description = description;
   if (displayName !== undefined) community.displayName = displayName;
+  if (logo !== undefined) (community as any).logo = logo;
   community.updatedAt = new Date();
 
   // Persist to file

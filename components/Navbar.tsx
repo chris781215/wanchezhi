@@ -204,9 +204,7 @@ export default function Navbar() {
                             onClick={() => handleSelectCommunity(c.slug)}
                             className="w-full text-left px-4 py-2.5 hover:bg-secondary flex items-center gap-3 border-b border-border last:border-0"
                           >
-                            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
-                              <span className="text-xs font-bold text-primary">{c.brand[0]}</span>
-                            </div>
+                            <BrandLogo brand={c.brand} size="sm" />
                             <div>
                               <p className="text-sm font-medium">w/{c.displayName}</p>
                               <p className="text-xs text-text-secondary">{(c.description || '').slice(0, 40)}</p>
@@ -332,7 +330,7 @@ export default function Navbar() {
                 href={`/u/${user.username}`}
                 className="flex items-center gap-2 px-4 py-2 border border-border rounded-full text-sm font-medium hover:bg-secondary transition-colors"
               >
-                <Avatar nickname={user.nickname} points={user.points} size="sm" />
+                <Avatar nickname={user.nickname} points={user.points} size="sm" image={user.avatar} />
                 <span>{user.nickname}</span>
               </Link>
               <button
@@ -409,9 +407,7 @@ export default function Navbar() {
                             onClick={() => handleSelectCommunity(c.slug)}
                             className="w-full text-left px-4 py-2.5 hover:bg-secondary flex items-center gap-3 border-b border-border last:border-0"
                           >
-                            <div className="w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
-                              <span className="text-xs font-bold text-primary">{c.brand[0]}</span>
-                            </div>
+                            <BrandLogo brand={c.brand} size="sm" />
                             <div>
                               <p className="text-sm font-medium">w/{c.displayName}</p>
                               <p className="text-xs text-text-secondary">{(c.description || '').slice(0, 30)}</p>
@@ -483,7 +479,7 @@ export default function Navbar() {
                   className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-secondary"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <Avatar nickname={user.nickname} points={user.points} size="md" />
+                  <Avatar nickname={user.nickname} points={user.points} size="md" image={user.avatar} />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold truncate">{user.nickname}</p>
                     <p className="text-[11px] text-text-secondary">{user.points} 积分</p>

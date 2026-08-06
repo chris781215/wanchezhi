@@ -7,9 +7,10 @@ interface AvatarProps {
   nickname: string;
   points: number;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  image?: string; // Custom avatar image URL
 }
 
-export default function Avatar({ nickname, points, size = 'md' }: AvatarProps) {
+export default function Avatar({ nickname, points, size = 'md', image }: AvatarProps) {
   const badge = getBadgeLevel(points);
   const levelName = badge.current.name;
 
@@ -61,14 +62,18 @@ export default function Avatar({ nickname, points, size = 'md' }: AvatarProps) {
       <div
         className={`
           ${sizeClasses[size]} rounded-full flex items-center justify-center
-          bg-gradient-to-br from-primary/20 to-primary/40
+          ${image ? 'overflow-hidden' : 'bg-gradient-to-br from-primary/20 to-primary/40'}
           ${hasFrame ? frameClass : ''}
           ${levelName === '传奇' ? 'avatar-frame-legend' : ''}
         `}
       >
-        <span className="font-bold text-primary">
-          {nickname[0]}
-        </span>
+        {image ? (
+          <img src={image} alt={nickname} className="w-full h-full object-cover" />
+        ) : (
+          <span className="font-bold text-primary">
+            {nickname[0]}
+          </span>
+        )}
       </div>
 
       {/* Level badge (corner) */}

@@ -81,6 +81,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
         userId={user!.id}
         username={user!.username}
         nickname={user!.nickname}
+        avatar={(user as any).avatar}
         points={user!.points}
         postCount={userPosts.length}
         posts={userPosts}

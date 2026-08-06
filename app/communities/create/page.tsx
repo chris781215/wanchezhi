@@ -143,7 +143,7 @@ export default function CreateCommunityPage() {
           className="w-full px-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-primary"
         />
         {filteredBrands.length > 0 && brand.trim() && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto z-10">
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto z-50">
             {filteredBrands.map((b) => (
               <button
                 key={b}

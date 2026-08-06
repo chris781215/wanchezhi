@@ -114,6 +114,20 @@ export default function Navbar() {
     }
   }, []);
 
+  // Fetch real notification count from API
+  useEffect(() => {
+    if (!user) { setNotifCount(0); return; }
+    const fetchNotifs = () => {
+      fetch(`/api/notifications?userId=${user.id}`)
+        .then(r => r.json())
+        .then(data => { if (data.success) setNotifCount(data.unreadCount || 0); })
+        .catch(() => {});
+    };
+    fetchNotifs();
+    const interval = setInterval(fetchNotifs, 30000); // poll every 30s
+    return () => clearInterval(interval);
+  }, [user]);
+
   // Search across communities, posts, and users
   const q = searchQuery.toLowerCase();
   const filteredCommunities = searchQuery.trim()
@@ -327,7 +341,7 @@ export default function Navbar() {
                 )}
               </Link>
               <Link
-                href={`/u/${user.username}`}
+                href="/my"
                 className="flex items-center gap-2 px-4 py-2 border border-border rounded-full text-sm font-medium hover:bg-secondary transition-colors"
               >
                 <Avatar nickname={user.nickname} points={user.points} size="sm" image={user.avatar} />
@@ -475,7 +489,7 @@ export default function Navbar() {
               <>
                 {/* User card */}
                 <Link
-                  href={`/u/${user.username}`}
+                  href="/my"
                   className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-secondary"
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -489,7 +503,7 @@ export default function Navbar() {
                 {/* Quick links */}
                 <div className="border-t border-border mt-1 pt-1 space-y-0.5">
                   <Link
-                    href={`/u/${user.username}`}
+                    href="/my"
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-secondary"
                     onClick={() => setMobileMenuOpen(false)}
                   >
@@ -497,7 +511,7 @@ export default function Navbar() {
                     <span className="text-sm">我的帖子</span>
                   </Link>
                   <Link
-                    href={`/u/${user.username}?tab=bookmarks`}
+                    href="/my"
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-secondary"
                     onClick={() => setMobileMenuOpen(false)}
                   >
@@ -513,7 +527,7 @@ export default function Navbar() {
                     <span className="text-sm">消息通知</span>
                   </Link>
                   <Link
-                    href={`/u/${user.username}?tab=settings`}
+                    href="/my"
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-secondary"
                     onClick={() => setMobileMenuOpen(false)}
                   >

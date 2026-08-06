@@ -30,7 +30,7 @@ export default function MobileTabBar() {
           <span className="text-[10px]">发帖</span>
         </a>
         <Link
-          href={user ? `/u/${user.username}` : '/auth/login'}
+          href={user ? '/my' : '/auth/login'}
           className="flex flex-col items-center gap-0.5 text-text-secondary"
         >
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

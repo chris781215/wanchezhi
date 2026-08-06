@@ -120,16 +120,16 @@ export const POINT_RULES = {
 export const BADGE_LEVELS = [
   { name: '新手上路', minPoints: 0, icon: '🚗', unlock: '浏览、发帖、评论、投票、收藏' },
   { name: '老司机', minPoints: 30, icon: '🏎️', unlock: '编辑/删除自己的帖子' },
-  { name: '赛车手', minPoints: 100, icon: '🏁', unlock: '发布交易帖' },
-  { name: '车神', minPoints: 300, icon: '👑', unlock: '编辑社区信息' },
-  { name: '传奇', minPoints: 800, icon: '⭐', unlock: '管理内容、删除他人帖子' },
+  { name: '赛车手', minPoints: 60, icon: '🏁', unlock: '发布交易帖（配件、整车）' },
+  { name: '车神', minPoints: 120, icon: '👑', unlock: '编辑社区信息' },
+  { name: '传奇', minPoints: 240, icon: '⭐', unlock: '管理内容、删除他人帖子' },
 ] as const;
 
 // Level permissions
 export const LEVEL_PERMISSIONS: Record<string, { label: string; permissions: string[] }> = {
   '新手上路': { label: 'Lv.1', permissions: ['浏览', '发帖(图文/纯文/链接)', '评论', '投票', '收藏'] },
   '老司机': { label: 'Lv.2', permissions: ['浏览', '发帖', '评论', '投票', '收藏', '编辑/删除自己的帖子'] },
-  '赛车手': { label: 'Lv.3', permissions: ['浏览', '发帖', '评论', '投票', '收藏', '编辑自己的帖子', '发布交易帖'] },
+  '赛车手': { label: 'Lv.3', permissions: ['浏览', '发帖', '评论', '投票', '收藏', '编辑自己的帖子', '发布交易帖（配件、整车）'] },
   '车神': { label: 'Lv.4', permissions: ['浏览', '发帖', '评论', '投票', '收藏', '编辑帖子', '交易帖', '编辑社区信息'] },
   '传奇': { label: 'Lv.5', permissions: ['全部权限', '管理内容', '删除他人帖子'] },
 };

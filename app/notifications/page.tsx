@@ -36,6 +36,7 @@ interface Notification {
 
 const typeIcons: Record<string, React.ReactNode> = {
   COMMENT: <CommentIcon className="w-5 h-5 text-blue-500" />,
+  REPLY: <CommentIcon className="w-5 h-5 text-blue-500" />,
   LIKE: <HeartIcon className="w-5 h-5 text-red-500" />,
   FOLLOW: <UserPlusIcon className="w-5 h-5 text-green-500" />,
   BOOKMARK: <BookmarkIcon className="w-5 h-5 text-amber-500" />,
@@ -76,7 +77,7 @@ export default function NotificationsPage() {
       await fetch('/api/notifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'markAllRead' }),
+        body: JSON.stringify({ action: 'markAllRead', userId: user!.id }),
       });
       setNotifications(notifications.map((n) => ({ ...n, read: true })));
     } catch {

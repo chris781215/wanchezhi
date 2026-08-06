@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { addBookmark, removeBookmark, isBookmarked, getBookmarkCount } from '@/lib/bookmark-store';
 import { addPoints } from '@/lib/user-store';
-import { mockPosts } from '@/lib/mock-data';
+import { mockPosts, mockUsers } from '@/lib/mock-data';
 import { loadDynamicPosts } from '@/lib/post-store';
+import { addNotification } from '@/lib/notification-store';
 
 export async function POST(request: Request) {
   try {
@@ -33,6 +34,22 @@ export async function POST(request: Request) {
       const post = mockPosts.find((p: any) => p.id === postId);
       if (post?.authorId) {
         addPoints(post.authorId, 2);
+        // Send notification
+        if (post.authorId !== userId) {
+          const bookmarker = mockUsers.find((u: any) => u.id === userId);
+          const slug = post.communityId || 'all';
+          addNotification({
+            type: 'BOOKMARK',
+            recipientId: post.authorId,
+            actorId: userId,
+            actorNickname: bookmarker?.nickname || '匿名',
+            targetId: postId,
+            targetType: 'post',
+            targetTitle: post.title?.slice(0, 20),
+            message: `${bookmarker?.nickname || '匿名'} 收藏了你的帖子 "${post.title?.slice(0, 20) || ''}"`,
+            link: `/w/${slug}/post/${postId}`,
+          });
+        }
       }
     }
 

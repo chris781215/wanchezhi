@@ -28,7 +28,7 @@ interface CommunityTradeSectionProps {
   tradePosts: Post[];
 }
 
-const TRADE_MIN_POINTS = 100; // 赛车手 Lv.3
+const TRADE_MIN_POINTS = 60; // 赛车手 Lv.3
 
 export default function CommunityTradeSection({ community, tradePosts }: CommunityTradeSectionProps) {
   const { user } = useAuth();

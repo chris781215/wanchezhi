@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { mockUsers } from '@/lib/mock-data';
+import { addNotification } from '@/lib/notification-store';
 
 export async function POST(request: Request) {
   try {
@@ -9,7 +11,22 @@ export async function POST(request: Request) {
     if (followerId === followingId) {
       return NextResponse.json({ success: false, error: '不能关注自己' }, { status: 400 });
     }
-    // Mock follow - return success
+
+    // Send notification for follow action
+    if (action !== 'unfollow') {
+      const follower = mockUsers.find((u: any) => u.id === followerId);
+      addNotification({
+        type: 'FOLLOW',
+        recipientId: followingId,
+        actorId: followerId,
+        actorNickname: follower?.nickname || '匿名',
+        targetId: followerId,
+        targetType: 'user',
+        message: `${follower?.nickname || '匿名'} 关注了你`,
+        link: `/u/${follower?.username || ''}`,
+      });
+    }
+
     return NextResponse.json({
       success: true,
       data: { followerId, followingId, action: action || 'follow' },
@@ -27,7 +44,6 @@ export async function GET(request: Request) {
     if (!userId) {
       return NextResponse.json({ success: false, error: '缺少 userId' }, { status: 400 });
     }
-    // Mock - return empty following list
     return NextResponse.json({ success: true, data: { following: [], followers: [] } });
   } catch (error) {
     console.error('Get follows error:', error);

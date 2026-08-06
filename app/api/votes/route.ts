@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { addVote, removeVote, getVoteScore, getUserVote } from '@/lib/vote-store';
 import { addPoints } from '@/lib/user-store';
-import { mockPosts } from '@/lib/mock-data';
+import { mockPosts, mockUsers } from '@/lib/mock-data';
 import { loadDynamicPosts } from '@/lib/post-store';
 import { mockComments } from '@/lib/mock-data';
 import { loadDynamicComments } from '@/lib/comment-store';
+import { addNotification } from '@/lib/notification-store';
 
 // Helper: get the author ID of a post or comment
 function getTargetAuthorId(targetId: string, targetType: 'post' | 'comment'): string | null {
@@ -68,6 +69,33 @@ export async function POST(request: Request) {
         }
         // Add new vote effect: upvote +1, downvote -1
         addPoints(targetAuthorId, value === 1 ? 1 : -1);
+      }
+
+      // Send notification for upvote only
+      if (value === 1 && targetAuthorId && targetAuthorId !== userId) {
+        const voter = mockUsers.find((u: any) => u.id === userId);
+        const nickname = voter?.nickname || '匿名';
+        let targetTitle = '';
+        let link = '#';
+        if (targetType === 'post') {
+          const post = mockPosts.find((p: any) => p.id === targetId);
+          targetTitle = post?.title?.slice(0, 20) || '';
+          const slug = post?.communityId || 'all';
+          link = `/w/${slug}/post/${targetId}`;
+        } else {
+          link = '#';
+        }
+        addNotification({
+          type: 'LIKE',
+          recipientId: targetAuthorId,
+          actorId: userId,
+          actorNickname: nickname,
+          targetId,
+          targetType,
+          targetTitle,
+          message: `${nickname} 赞了${targetType === 'post' ? '帖子' : '评论'}${targetTitle ? ` "${targetTitle}"` : ''}`,
+          link,
+        });
       }
     }
 

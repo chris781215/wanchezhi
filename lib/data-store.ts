@@ -135,6 +135,7 @@ const INITIAL_DATA: Record<string, any[]> = {
   'votes.json': INITIAL_VOTES,
   'bookmarks.json': INITIAL_BOOKMARKS,
   'comments.json': INITIAL_COMMENTS,
+  'notifications.json': [],
 };
 
 // In-memory cache for when fs is unavailable (Cloudflare)

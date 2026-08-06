@@ -50,6 +50,11 @@ const TagIcon = ({ className }: { className?: string }) => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
   </svg>
 );
+const LockIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+  </svg>
+);
 
 type PostType = 'IMAGE' | 'TEXT' | 'LINK' | 'TRADE';
 
@@ -495,13 +500,13 @@ export default function SubmitPage() {
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
             postType === 'TRADE' ? 'bg-orange-500 text-white' : canTrade ? 'bg-secondary text-text-secondary hover:bg-border' : 'bg-secondary text-text-secondary/40 cursor-not-allowed'
           }`}
-          title={!canTrade ? '需要赛车手(Lv.3)以上等级才能发布交易帖' : ''}
+          title={!canTrade ? '需要赛车手(Lv.3) 60积分才能发布交易帖' : ''}
         >
-          <TagIcon className="w-3.5 h-3.5" />
+          {!canTrade ? <LockIcon className="w-3.5 h-3.5" /> : <TagIcon className="w-3.5 h-3.5" />}
           交易
         </button>
         {!canTrade && (
-          <span className="text-[10px] text-text-secondary/60 ml-1">赛车手(Lv.3) 100积分可发配件交易 · 车神(Lv.4) 300积分可发整车交易</span>
+          <span className="text-[10px] text-text-secondary/60 ml-1">🔒 赛车手(Lv.3) 60积分解锁</span>
         )}
       </div>
 

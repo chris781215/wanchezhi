@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
+import { getBadgeLevel } from '@/lib/utils';
 import BrandLogo from '@/components/BrandLogo';
 
 const EditIcon = ({ className }: { className?: string }) => (
@@ -14,6 +15,12 @@ const EditIcon = ({ className }: { className?: string }) => (
 const CloseIcon = ({ className }: { className?: string }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+  </svg>
+);
+
+const LockIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
   </svg>
 );
 
@@ -46,8 +53,30 @@ export default function CommunityEditButton({
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Only the community creator or admin can edit
-  if (!user || (user.id !== createdById && !user.isAdmin)) return null;
+  // Check level permission (Lv.4 = 车神 can edit)
+  const userLevel = user ? getBadgeLevel(user.points)?.current?.name : null;
+  const canEdit = userLevel === '车神' || userLevel === '传奇' || user?.isAdmin;
+  const isCreator = user?.id === createdById;
+
+  // Not logged in or not creator and can't edit by level
+  if (!user) return null;
+  if (!isCreator && !canEdit) {
+    // Show locked button with tooltip
+    return (
+      <div className="relative group">
+        <button
+          disabled
+          className="flex items-center gap-1 px-3 py-1.5 border border-border rounded-full text-sm font-medium bg-secondary/50 text-text-secondary/40 cursor-not-allowed"
+        >
+          <LockIcon className="w-3.5 h-3.5" />
+          <span>编辑</span>
+        </button>
+        <div className="absolute right-0 top-full mt-1 px-2.5 py-1.5 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50">
+          需要车神(Lv.4) 120积分才能编辑社区信息
+        </div>
+      </div>
+    );
+  }
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

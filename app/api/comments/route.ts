@@ -3,6 +3,7 @@ import { mockComments, mockUsers, mockPosts } from '@/lib/mock-data';
 import { loadDynamicUsers, addPoints } from '@/lib/user-store';
 import { loadDynamicComments, saveComment } from '@/lib/comment-store';
 import { loadDynamicPosts, savePost } from '@/lib/post-store';
+import { addNotification } from '@/lib/notification-store';
 
 function ensureDynamicUsersLoaded() {
   const dynamicUsers = loadDynamicUsers();
@@ -72,6 +73,23 @@ export async function POST(request: Request) {
     // Award points for commenting (+1)
     if (uid) {
       addPoints(uid, 1);
+    }
+
+    // Send notification to post author
+    if (post && post.authorId && post.authorId !== uid) {
+      const commenter = mockUsers.find((u: any) => u.id === uid);
+      const slug = post.communityId || 'all';
+      addNotification({
+        type: parentId ? 'REPLY' : 'COMMENT',
+        recipientId: post.authorId,
+        actorId: uid,
+        actorNickname: commenter?.nickname || '匿名',
+        targetId: newComment.id,
+        targetType: 'comment',
+        targetTitle: post.title,
+        message: `${commenter?.nickname || '匿名'} ${parentId ? '回复了你' : '评论了帖子'} "${post.title?.slice(0, 20) || ''}"`,
+        link: `/w/${slug}/post/${postId}#comments`,
+      });
     }
 
     return NextResponse.json({ success: true, data: newComment });

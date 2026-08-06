@@ -1,22 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { useAuth } from '@/lib/auth-context';
+import { useState, useEffect } from 'react';
 import Avatar from '@/components/Avatar';
 import FollowButton from '@/components/FollowButton';
 import { getBadgeLevel, formatNumber } from '@/lib/utils';
 import { Post, Comment } from '@/types';
-
-const CheckIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-  </svg>
-);
-const XIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-  </svg>
-);
 
 interface ProfileHeaderProps {
   userId: string;
@@ -29,17 +17,8 @@ interface ProfileHeaderProps {
   comments: Comment[];
 }
 
-export default function ProfileHeader({ userId, username, nickname: initialNickname, avatar: initialAvatar, points, postCount, posts, comments }: ProfileHeaderProps) {
-  const { user } = useAuth();
-  const isOwner = user?.username === username;
-
+export default function ProfileHeader({ username, nickname, avatar, points, postCount }: ProfileHeaderProps) {
   const [bio, setBio] = useState('');
-  const [editingBio, setEditingBio] = useState(false);
-  const [bioValue, setBioValue] = useState('');
-  const [saving, setSaving] = useState(false);
-  const [avatar, setAvatar] = useState(initialAvatar || '');
-  const [uploadingAvatar, setUploadingAvatar] = useState(false);
-  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch bio from API
   useEffect(() => {
@@ -55,126 +34,29 @@ export default function ProfileHeader({ userId, username, nickname: initialNickn
 
   const badge = getBadgeLevel(points);
 
-  const handleSaveBio = async () => {
-    setSaving(true);
-    try {
-      const res = await fetch(`/api/users/${encodeURIComponent(username)}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bio: bioValue.trim() }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setBio(bioValue.trim());
-      }
-    } catch {}
-    setSaving(false);
-    setEditingBio(false);
-  };
-
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploadingAvatar(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('type', 'avatar');
-      const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
-      if (data.success) {
-        setAvatar(data.data.url);
-        // Save to user profile
-        await fetch(`/api/users/${encodeURIComponent(username)}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ avatar: data.data.url }),
-        });
-      }
-    } catch {}
-    setUploadingAvatar(false);
-  };
-
   return (
     <div className="bg-white border border-border rounded-lg overflow-hidden mb-6">
       <div className="h-24 bg-gradient-to-r from-primary to-blue-400" />
       <div className="px-4 pb-4 -mt-10">
         <div className="flex items-end gap-4">
-          <div className="border-4 border-white rounded-full shadow relative group">
-            <Avatar nickname={initialNickname} points={points} size="lg" image={avatar} />
-            {isOwner && (
-              <>
-                <input
-                  ref={avatarInputRef}
-                  type="file"
-                  accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
-                  onChange={handleAvatarUpload}
-                  className="hidden"
-                />
-                <button
-                  onClick={() => avatarInputRef.current?.click()}
-                  disabled={uploadingAvatar}
-                  className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-medium"
-                  title="更换头像"
-                >
-                  {uploadingAvatar ? '上传中...' : '📷'}
-                </button>
-              </>
-            )}
+          <div className="border-4 border-white rounded-full shadow">
+            <Avatar nickname={nickname} points={points} size="lg" image={avatar} />
           </div>
           <div className="flex-1 pt-12">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1">
-                <h1 className="text-xl font-bold">{initialNickname}</h1>
+                <h1 className="text-xl font-bold">{nickname}</h1>
                 <p className="text-sm text-text-secondary">@{username}</p>
               </div>
-              <FollowButton nickname={initialNickname} />
+              <FollowButton nickname={nickname} />
             </div>
 
-            {/* Bio */}
-            <div className="mt-2">
-              {editingBio ? (
-                <div className="space-y-2">
-                  <textarea
-                    value={bioValue}
-                    onChange={(e) => setBioValue(e.target.value)}
-                    className="w-full border border-border rounded-lg p-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
-                    rows={2}
-                    placeholder="介绍一下自己..."
-                    autoFocus
-                    maxLength={200}
-                  />
-                  <div className="flex justify-end gap-2">
-                    <button
-                      onClick={() => { setEditingBio(false); setBioValue(bio); }}
-                      className="flex items-center gap-1 px-3 py-1.5 text-xs rounded-lg border border-border hover:bg-secondary transition-colors"
-                    >
-                      <XIcon className="w-3.5 h-3.5" />
-                      取消
-                    </button>
-                    <button
-                      onClick={handleSaveBio}
-                      disabled={saving}
-                      className="flex items-center gap-1 px-3 py-1.5 text-xs rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors disabled:opacity-50"
-                    >
-                      <CheckIcon className="w-3.5 h-3.5" />
-                      {saving ? '保存中...' : '保存'}
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div
-                  className={`text-sm text-text-secondary ${isOwner ? 'cursor-pointer hover:text-foreground transition-colors' : ''}`}
-                  onClick={() => { if (isOwner) { setEditingBio(true); setBioValue(bio); } }}
-                >
-                  {bio ? (
-                    <p className="whitespace-pre-wrap">{bio}</p>
-                  ) : isOwner ? (
-                    <p className="italic text-text-secondary/60">✏️ 点击添加个人简介</p>
-                  ) : null}
-                </div>
-              )}
-            </div>
+            {/* Bio - pure display */}
+            {bio && (
+              <div className="mt-2">
+                <p className="text-sm text-text-secondary whitespace-pre-wrap">{bio}</p>
+              </div>
+            )}
           </div>
         </div>
 

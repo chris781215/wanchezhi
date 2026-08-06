@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getUserNotifications, getUnreadCount, markAsRead, markAllAsRead } from '@/lib/notification-store';
 
 export async function GET(request: Request) {
   try {
@@ -9,43 +10,10 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: false, error: '缺少 userId' }, { status: 400 });
     }
 
-    // Mock notifications
-    const notifications = [
-      {
-        id: 'notif1',
-        type: 'COMMENT',
-        message: '张三 评论了你的帖子 "W221 空气悬挂维修经验分享"',
-        link: '/post/post1#comments',
-        read: false,
-        createdAt: new Date(Date.now() - 3600000).toISOString(),
-      },
-      {
-        id: 'notif2',
-        type: 'LIKE',
-        message: '李四 赞了你的帖子 "E46 底盘异响排查全过程"',
-        link: '/post/post2',
-        read: false,
-        createdAt: new Date(Date.now() - 7200000).toISOString(),
-      },
-      {
-        id: 'notif3',
-        type: 'FOLLOW',
-        message: '王五 关注了你',
-        link: '/u/王五',
-        read: true,
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-      },
-      {
-        id: 'notif4',
-        type: 'BOOKMARK',
-        message: '赵六 收藏了你的帖子 "B58 涡轮升级指南"',
-        link: '/post/post3',
-        read: true,
-        createdAt: new Date(Date.now() - 172800000).toISOString(),
-      },
-    ];
+    const notifications = getUserNotifications(userId);
+    const unreadCount = getUnreadCount(userId);
 
-    return NextResponse.json({ success: true, data: notifications });
+    return NextResponse.json({ success: true, data: notifications, unreadCount });
   } catch (error) {
     console.error('Get notifications error:', error);
     return NextResponse.json({ success: false, error: '服务器错误' }, { status: 500 });
@@ -54,13 +22,15 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { notificationId, action } = await request.json();
+    const { notificationId, action, userId } = await request.json();
 
     if (action === 'markRead' && notificationId) {
+      markAsRead(notificationId);
       return NextResponse.json({ success: true, data: { id: notificationId, read: true } });
     }
 
-    if (action === 'markAllRead') {
+    if (action === 'markAllRead' && userId) {
+      markAllAsRead(userId);
       return NextResponse.json({ success: true, data: { allRead: true } });
     }
 

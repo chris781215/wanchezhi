@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { mockPosts, mockCommunities, mockUsers } from '@/lib/mock-data';
 import { loadDynamicPosts, savePost } from '@/lib/post-store';
-import { loadDynamicUsers } from '@/lib/user-store';
+import { loadDynamicUsers, addPoints } from '@/lib/user-store';
 import { loadVotes } from '@/lib/vote-store';
 
 // Load persisted dynamic users into memory
@@ -70,6 +70,10 @@ export async function POST(request: Request) {
     mockPosts.unshift(newPost as any);
     // Persist to file so it survives hot reload and module isolation
     savePost(newPost);
+    // Award points for creating a post (+3)
+    if (authorId) {
+      addPoints(authorId, 3);
+    }
     return NextResponse.json({ success: true, data: newPost });
   } catch (error) {
     console.error('Create post error:', error);

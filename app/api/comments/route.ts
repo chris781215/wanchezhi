@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { mockComments, mockUsers, mockPosts } from '@/lib/mock-data';
-import { loadDynamicUsers } from '@/lib/user-store';
+import { loadDynamicUsers, addPoints } from '@/lib/user-store';
 import { loadDynamicComments, saveComment } from '@/lib/comment-store';
 import { loadDynamicPosts, savePost } from '@/lib/post-store';
 
@@ -67,6 +67,11 @@ export async function POST(request: Request) {
     if (post) {
       post.commentCount = (post.commentCount || 0) + 1;
       savePost(post);
+    }
+
+    // Award points for commenting (+1)
+    if (uid) {
+      addPoints(uid, 1);
     }
 
     return NextResponse.json({ success: true, data: newComment });

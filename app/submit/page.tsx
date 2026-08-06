@@ -400,7 +400,7 @@ export default function SubmitPage() {
       </div>
 
       {/* Image upload area */}
-      {postType === 'IMAGE' && (
+      {(postType === 'IMAGE' || postType === 'TRADE') && (
         <div className="mb-4">
           <div className="grid grid-cols-3 gap-2">
             {images.map((img, idx) => (
@@ -523,6 +523,11 @@ export default function SubmitPage() {
               当前等级不足，需要赛车手(Lv.3)以上才能发布交易帖
             </p>
           )}
+          {images.length === 0 && (
+            <p className="mt-2 text-xs text-orange-600 font-medium">
+              交易帖必须上传至少一张图片
+            </p>
+          )}
         </div>
       )}
 
@@ -556,16 +561,20 @@ export default function SubmitPage() {
             存草稿
           </button>
           <button
-            disabled={!hasContent || !selectedCommunity || submitting}
+            disabled={!hasContent || !selectedCommunity || submitting || (postType === 'TRADE' && images.length === 0)}
             onClick={async () => {
               if (!hasContent || !selectedCommunity) return;
+              if (postType === 'TRADE' && images.length === 0) {
+                setError('交易帖必须上传至少一张图片');
+                return;
+              }
               setSubmitting(true);
               setError('');
               try {
                 let uploadedUrls: string[] | undefined;
 
                 // Upload images if any (convert base64 to files and upload)
-                if (postType === 'IMAGE' && images.length > 0) {
+                if ((postType === 'IMAGE' || postType === 'TRADE') && images.length > 0) {
                   const formData = new FormData();
                   for (const img of images) {
                     if (img.startsWith('data:')) {
